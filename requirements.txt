@@ -1,0 +1,7 @@
+networkx
+osmnx
+haversine
+staticmap
+python-telegram-bot
+pandas
+fuzzysearch
