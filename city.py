@@ -2,8 +2,18 @@ import networkx
 import osmnx
 import haversine
 import pandas
+import pandas as pd
 import staticmap
 from metro import *
+
+
+url = 'https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/restaurants.csv'
+csv_restaurants = pd.read_csv(url)
+url = 'https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/blob/main/estacions.csv'
+csv_restaurants = pd.read_csv(url)
+url = 'https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/blob/main/accessos.csv'
+csv_restaurants = pd.read_csv(url)
+
 
 CityGraph = networkx.Graph
 
