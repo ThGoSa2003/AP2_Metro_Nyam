@@ -55,6 +55,8 @@ Restaurants = List[Restaurant]
 def read() -> Restaurants:
     dim = csv_restaurants.shape()
     for i in range(dim[0]):
+        print(csv_restaurants.iloc[i,:])
+
 
 
 def find(query: str, restaurants: Restaurants) -> Restaurants: ...
