@@ -49,8 +49,13 @@ class Restaurant:
     def contains(self, query: str) -> bool:
         """
         Returns whether the restaurant contains a given word "query" in any
-        of its fields.
+        of its attributes.
         """
+
+        for attribute in dir(self):
+            if self.attribute == query:
+                return True
+        return False
 
 Restaurants = List[Restaurant]
 
@@ -73,7 +78,7 @@ read()
 def find(query: str, restaurants: Restaurants) -> Restaurants:
     """
     Given a word "query", return the list of restaurants with that word in
-    any of its fields.
+    any of its attributes.
     """
 
-    filtered_list = [restaurant in restaurants if restaurant.contains(query)]
+    filtered_list = [restaurant for restaurnat in restaurants if restaurant.contains(query)]
