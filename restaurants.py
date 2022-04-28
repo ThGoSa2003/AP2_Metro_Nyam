@@ -64,6 +64,8 @@ def read() -> Restaurants:
     csv_restaurants = pd.read_csv('https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/restaurants.csv')
     dim = csv_restaurants.shape
     l = [i for i in csv_restaurants.iloc[0,:][:]]
+    fields = dir(Restaurant)
+
     print(l)
     r = Restaurant(i for i in csv_restaurants.iloc[0,:][:])
     print(r)
