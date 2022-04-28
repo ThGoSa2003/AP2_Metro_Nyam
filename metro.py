@@ -1,6 +1,8 @@
 import networkx
 import staticmap
 import pandas as pd
+from dataclasses import *
+from typing import Optional, List
 
 
 def get_metro_graph() -> MetroGraph: ...
@@ -8,12 +10,19 @@ def get_metro_graph() -> MetroGraph: ...
 
 MetroGraph = networkx.Graph
 
+Position = Tuple[float,float]
 
 @dataclass
-class Station: ...
+class Station:
+    name: str
+    line: str
+    pos: Position
 
 @dataclass
-class Access: ...
+class Access:
+    name: str
+    accessibility: bool
+    pos: Position
 
 Stations = List[Station]
 
