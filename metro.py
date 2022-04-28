@@ -43,6 +43,14 @@ def read_stations() -> Stations:
 def read_accesses() -> Accesses:
 
     csv_accessos = pd.read_csv('https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/blob/main/accessos.csv')
+    dim = csv_accessos.shape
+    accessos = []
+    for i in range(dim[0]):
+        name = csv_accessos.iloc[i,6]
+        accessibility = csv_accessos.iloc[i,8] == "Accessible"
+        pos = 
+        accessos.append(Restaurant(name, accessibility))
+    return accessos
 
 
 def show(g: MetroGraph) -> None: ...
