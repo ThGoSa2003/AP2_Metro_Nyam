@@ -46,6 +46,11 @@ class Restaurant:
     geo_epgs_4326_x: float
     geo_epgs_4326_y: float
 
+    def contains(self, query: str) -> bool:
+        """
+        Returns whether the restaurant contains a given word "query" in any
+        of its fields.
+        """
 
 Restaurants = List[Restaurant]
 
@@ -63,4 +68,10 @@ def read() -> Restaurants:
 read()
 
 
-def find(query: str, restaurants: Restaurants) -> Restaurants: ...
+def find(query: str, restaurants: Restaurants) -> Restaurants:
+    """
+    Given a word "query", return the list of restaurants with that word in
+    any of its fields.
+    """
+
+    filtered_list = [restaurant in restaurants if restaurant.contains(query)]
