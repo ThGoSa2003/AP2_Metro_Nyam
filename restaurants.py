@@ -52,7 +52,7 @@ class Restaurant:
         """
 
         for attribute, value in vars(self):
-            if value == query:
+            if query in str(value):
                 return True
         return False
 
