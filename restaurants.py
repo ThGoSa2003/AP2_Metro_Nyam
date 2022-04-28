@@ -62,19 +62,10 @@ Restaurants = List[Restaurant]
 def read() -> Restaurants:
     csv_restaurants = pd.read_csv('https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/restaurants.csv')
     dim = csv_restaurants.shape
-    l = Restaurant(*[i for i in csv_restaurants.iloc[0,:]])
-    print(l)
-    fields = dir(Restaurant)
-    for i in range(len(l)):
-        R.fields[i] = l[i]
-
-    r = Restaurant(i for i in csv_restaurants.iloc[0,:][:])
-    print(r)
-    #for i in range(dim[0]):
-    #    print(csv_restaurants.iloc[i,:])
-
-read()
-
+    restaurants = []
+    for i in range(dim[0]):
+        restaurants.append(Restaurant(*[j for j in csv_restaurants.iloc[i,:]]))
+    return restaurants
 
 def find(query: str, restaurants: Restaurants) -> Restaurants:
     """
