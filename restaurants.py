@@ -51,7 +51,7 @@ class Restaurant:
         of its attributes.
         """
 
-        for attribute, value in vars(self):
+        for attribute, value in vars(self).items():
             if query in str(value):
                 return True
         return False
@@ -73,4 +73,4 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
     any of its attributes.
     """
 
-    filtered_list = [restaurant for restaurant in restaurants if restaurant.contains(query)]
+    return [restaurant for restaurant in restaurants if restaurant.contains(query)]
