@@ -79,4 +79,4 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
     any of its attributes.
     """
 
-    filtered_list = [restaurant for restaurnat in restaurants if restaurant.contains(query)]
+    filtered_list = [restaurant for restaurant in restaurants if restaurant.contains(query)]
