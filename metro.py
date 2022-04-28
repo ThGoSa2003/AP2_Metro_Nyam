@@ -1,16 +1,16 @@
 import networkx
 import staticmap
 import pandas as pd
-from dataclasses import *
+from dataclasses import dataclass
 from typing import Optional, List
-
-
-def get_metro_graph() -> MetroGraph: ...
 
 
 MetroGraph = networkx.Graph
 
-Position = Tuple[float,float]
+def get_metro_graph() -> MetroGraph: ...
+
+
+Position = tuple[float,float]
 
 @dataclass
 class Station:
@@ -24,14 +24,21 @@ class Access:
     accessibility: bool
     pos: Position
 
-Stations = List[Station]
+Stations = list[Station]
 
-Accesses = List[Access]
+Accesses = list[Access]
 
 
 def read_stations() -> Stations:
-
-    csv_estacions = pd.read_csv('https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/blob/main/estacions.csv')
+    csv_estacions = pd.read_csv('https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/estacions.csv')
+    dim = csv_estacions.shape
+    stations = []
+    for i in range(dim[0]):
+        name = csv_estacions.iloc[i,7]
+        accessibility = csv_estacions.iloc[i,18] == "Accessible"
+        pos = tuple(map(float,csv_estacions.iloc[i,26][7:-1].split()))
+        stations.append(Station(name,accessibility,pos))
+    return stations
 
 def read_accesses() -> Accesses:
 
