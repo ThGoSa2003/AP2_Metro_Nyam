@@ -41,15 +41,14 @@ def read_stations() -> Stations:
     return stations
 
 def read_accesses() -> Accesses:
-
-    csv_accessos = pd.read_csv('https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/blob/main/accessos.csv')
+    csv_accessos = pd.read_csv('https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/accessos.csv')
     dim = csv_accessos.shape
     accessos = []
     for i in range(dim[0]):
         name = csv_accessos.iloc[i,6]
         accessibility = csv_accessos.iloc[i,8] == "Accessible"
-        pos = 
-        accessos.append(Restaurant(name, accessibility))
+        pos = tuple(map(float,csv_accessos.iloc[i,-1][7:-1].split()))
+        accessos.append(Access(name, accessibility,pos))
     return accessos
 
 
