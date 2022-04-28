@@ -8,7 +8,6 @@ class Restaurant:
     """
     Implementation of the Restaurant class.
     """
-    id: int
     register_id: int
     name: str
     institution_id: Optional[int]
@@ -52,8 +51,8 @@ class Restaurant:
         of its attributes.
         """
 
-        for attribute in dir(self):
-            if self.attribute == query:
+        for attribute, value in vars(self):
+            if value == query:
                 return True
         return False
 
@@ -83,4 +82,4 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
     any of its attributes.
     """
 
-    filtered_list = [restaurant for restaurnat in restaurants if restaurant.contains(query)]
+    filtered_list = [restaurant for restaurant in restaurants if restaurant.contains(query)]
