@@ -1,5 +1,7 @@
 import pandas as pd
 import fuzzysearch
+from dataclasses import *
+from typing import Optional, List
 
 @dataclass
 class Restaurant:
@@ -59,12 +61,16 @@ Restaurants = List[Restaurant]
 
 
 def read() -> Restaurants:
-    csv_restaurants = pd.read_csv('https://raw.githubusercontent.com/\
-    jordi-petit/ap2-metro-nyam-2022/main/data/restaurants.csv')
-    dim = csv_restaurants.shape()
-    for i in range(dim[0]):
-        print(csv_restaurants.iloc[i,:])
+    csv_restaurants = pd.read_csv('https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/restaurants.csv')
+    dim = csv_restaurants.shape
+    l = [i for i in csv_restaurants.iloc[0,:][:]]
+    print(l)
+    r = Restaurant(i for i in csv_restaurants.iloc[0,:][:])
+    print(r)
+    #for i in range(dim[0]):
+    #    print(csv_restaurants.iloc[i,:])
 
+read()
 
 
 def find(query: str, restaurants: Restaurants) -> Restaurants:
