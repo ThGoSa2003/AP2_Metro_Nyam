@@ -31,6 +31,9 @@ class Station:
     line: str
     pos: Position
 
+    def __hash__():
+        return hash(id_station)
+
 @dataclass
 class Access:
     id_access: int
@@ -38,6 +41,9 @@ class Access:
     accessibility: bool
     name_station: str
     pos: Position
+
+    def __hash__():
+        return hash(id_access)
 
 Stations = list[Station]
 
