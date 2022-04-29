@@ -7,6 +7,16 @@ from typing import Optional, List
 
 MetroGraph = nx.Graph
 
+def by_name(station1: Station, station2: Station) -> bool:
+
+    if station1.name < station2.name:
+        return True
+    if station2.name > station2.name:
+        return False
+    if station1.name < station2.name:
+        return True
+    return False
+
 def get_metro_graph() -> MetroGraph:
     """
 
@@ -18,7 +28,16 @@ def get_metro_graph() -> MetroGraph:
     metro_graph.add_nodes_from(stations)
     metro_graph.add_nodes_from(accesses)
     for i in range(len(stations) - 1):
-        if stations[i].order
+        if stations[i].order < station[i + 1].order:
+            metro_graph.add_edge(stations[i], stations[i + 1], type = "tram")
+            metro_graph.add_edge(stations[i + 1], stations[i], type = "tram")
+    sort(stations, key=by_name)
+    for i in range(len(stations) - 1):
+        if stations[i].name == station[i + 1].name:
+            metro_graph.add_edge(stations[i], stations[i + 1], type = "transbord")
+            metro_graph.add_edge(stations[i + 1], stations[i], type = "transbord")
+    for access in accesses:
+        metro_graph.add_edge(access, estacion tq estacion.name == name_station)
 
 
 Position = tuple[float,float]
