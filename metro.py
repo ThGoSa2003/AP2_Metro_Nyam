@@ -3,6 +3,35 @@ import staticmap
 import pandas as pd
 from dataclasses import dataclass
 from typing import Optional, List
+import matplotlib.pyplot as plt
+
+Position = tuple[float,float]
+
+@dataclass
+class Station:
+    id_station: int
+    name: str
+    order: int
+    line: str
+    pos: Position
+
+    def __hash__():
+        return hash(id_station)
+
+@dataclass
+class Access:
+    id_access: int
+    name: str
+    accessibility: bool
+    name_station: str
+    pos: Position
+
+    def __hash__():
+        return hash(id_access)
+
+Stations = list[Station]
+
+Accesses = list[Access]
 
 
 MetroGraph = nx.Graph
@@ -54,36 +83,6 @@ def get_metro_graph() -> MetroGraph:
             metro_graph.add_edge(access[access_idx], station, type = "transbord")
             access_idx += 1
 
-
-Position = tuple[float,float]
-
-@dataclass
-class Station:
-    id_station: int
-    name: str
-    order: int
-    line: str
-    pos: Position
-
-    def __hash__():
-        return hash(id_station)
-
-@dataclass
-class Access:
-    id_access: int
-    name: str
-    accessibility: bool
-    name_station: str
-    pos: Position
-
-    def __hash__():
-        return hash(id_access)
-
-Stations = list[Station]
-
-Accesses = list[Access]
-
-
 def read_stations() -> Stations:
     """
 
@@ -119,5 +118,17 @@ def read_accesses() -> Accesses:
     return accesses
 
 
-def show(g: MetroGraph) -> None: ...
+def show(g: MetroGraph) -> None:...
+
+    g = nx.Graph()
+
+    g.add_edge(1, 2)
+    g.add_edge(2, 3)
+    g.add_edge(3, 4)
+    g.add_edge(1, 4)
+    g.add_edge(1, 5)
+    plt.figure()
+    nx.draw(g, with_labels = True)
+    plt.show()
+
 def plot(g: MetroGraph, filename: str) -> None: ...
