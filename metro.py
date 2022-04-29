@@ -17,7 +17,7 @@ def get_metro_graph() -> MetroGraph:
     metro_graph = MetroGraph()
     metro_graph.add_nodes_from(stations)
     metro_graph.add_nodes_from(accesses)
-    for station in stations:
+    for station in stations:...
 
 
 Position = tuple[float,float]
@@ -30,6 +30,9 @@ class Station:
     line: str
     pos: Position
 
+    def __hash__():
+        return hash(id_station)
+
 @dataclass
 class Access:
     id_access: int
@@ -37,6 +40,9 @@ class Access:
     accessibility: bool
     name_station: str
     pos: Position
+
+    def __hash__():
+        return hash(id_access)
 
 Stations = list[Station]
 
