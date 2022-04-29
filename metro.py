@@ -1,11 +1,11 @@
-import networkx
+import networkx as nx
 import staticmap
 import pandas as pd
 from dataclasses import dataclass
 from typing import Optional, List
 
 
-MetroGraph = networkx.Graph
+MetroGraph = nx.Graph
 
 def get_metro_graph() -> MetroGraph:
     """
