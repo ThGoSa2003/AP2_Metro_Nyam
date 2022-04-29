@@ -13,9 +13,10 @@ def get_metro_graph() -> MetroGraph:
     """
 
     stations = read_stations()
-    accessos = read_accesses()
-
-
+    accesses = read_accesses()
+    metro_graph = MetroGraph()
+    metro_graph.add_nodes_from(stations)
+    metro_graph.add_nodes_from(accesses)
 
 
 Position = tuple[float,float]
@@ -31,6 +32,7 @@ class Station:
 class Access:
     name: str
     accessibility: bool
+    name_station: str
     pos: Position
 
 Stations = list[Station]
@@ -63,8 +65,9 @@ def read_accesses() -> Accesses:
     dim = csv_accesses.shape
     accesses = []
     for i in range(dim[0]):
-        name = csv_accesses.iloc[i,6]
+        name = csv_accesses.iloc[i,3]
         accessibility = csv_accesses.iloc[i,8] == "Accessible"
+        name_station = csv_accesses.iloc[i,6]
         pos = tuple(map(float,csv_accesses.iloc[i,-1][7:-1].split()))
         accesses.append(Access(name,accessibility,pos))
     return accesses
