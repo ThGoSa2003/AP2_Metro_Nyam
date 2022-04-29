@@ -13,7 +13,17 @@ def by_name(station1: Station, station2: Station) -> bool:
         return True
     if station2.name > station2.name:
         return False
-    if station1.name < station2.name:
+    if station1.line < station2.line:
+        return True
+    return False
+
+def by_station_name(access1: Access, access2: Access) -> bool:
+
+    if access1.station_name < access2.station_name:
+        return True
+    if access2.station_name > access2.station_name:
+        return False
+    if access1.name < access2.name:
         return True
     return False
 
@@ -36,8 +46,13 @@ def get_metro_graph() -> MetroGraph:
         if stations[i].name == station[i + 1].name:
             metro_graph.add_edge(stations[i], stations[i + 1], type = "transbord")
             metro_graph.add_edge(stations[i + 1], stations[i], type = "transbord")
-    for access in accesses:
-        metro_graph.add_edge(access, estacion tq estacion.name == name_station)
+    sort(accesses, key=by_station_name)
+    access_idx = 0
+    for station in stations:
+        while accesses[access_idx].station_name == station.name:
+            metro_graph.add_edge(station, access[access_idx], type = "transbord")
+            metro_graph.add_edge(access[access_idx], station, type = "transbord")
+            access_idx += 1
 
 
 Position = tuple[float,float]
