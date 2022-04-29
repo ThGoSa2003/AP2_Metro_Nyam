@@ -69,7 +69,7 @@ def read_accesses() -> Accesses:
         accessibility = csv_accesses.iloc[i,8] == "Accessible"
         name_station = csv_accesses.iloc[i,6]
         pos = tuple(map(float,csv_accesses.iloc[i,-1][7:-1].split()))
-        accesses.append(Access(name,accessibility,pos))
+        accesses.append(Access(name,accessibility,name_station,pos))
     return accesses
 
 
