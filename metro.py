@@ -17,7 +17,8 @@ def get_metro_graph() -> MetroGraph:
     metro_graph = MetroGraph()
     metro_graph.add_nodes_from(stations)
     metro_graph.add_nodes_from(accesses)
-    for station in stations:
+    for i in range(len(stations) - 1):
+        if stations[i].order
 
 
 Position = tuple[float,float]
