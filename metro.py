@@ -82,6 +82,7 @@ def get_metro_graph() -> MetroGraph:
             metro_graph.add_edge(station, access[access_idx], type = "transbord")
             metro_graph.add_edge(access[access_idx], station, type = "transbord")
             access_idx += 1
+    return metro_graph
 
 def read_stations() -> Stations:
     """
