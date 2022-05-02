@@ -15,8 +15,8 @@ class Station:
     line: str
     pos: Position
 
-    def __hash__():
-        return hash(id_station)
+    def __hash__(self):
+        return hash(self.id_station)
 
 @dataclass
 class Access:
@@ -26,8 +26,8 @@ class Access:
     name_station: str
     pos: Position
 
-    def __hash__():
-        return hash(id_access)
+    def __hash__(self):
+        return hash(self.id_access)
 
 Stations = list[Station]
 
@@ -118,17 +118,11 @@ def read_accesses() -> Accesses:
     return accesses
 
 
-def show(g: MetroGraph) -> None:...
-
-    g = nx.Graph()
-
-    g.add_edge(1, 2)
-    g.add_edge(2, 3)
-    g.add_edge(3, 4)
-    g.add_edge(1, 4)
-    g.add_edge(1, 5)
-    plt.figure()
-    nx.draw(g, with_labels = True)
+def show(g: MetroGraph) -> None:
+    positions = {}
+    for n in  nx.nodes(g):
+        positions[n] = n.pos
+    nx.draw(g,pos = positions)
     plt.show()
 
 def plot(g: MetroGraph, filename: str) -> None: ...
