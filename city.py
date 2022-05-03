@@ -24,7 +24,7 @@ def load_osmnx_graph(filename: str) -> OsmnxGraph:
     osmnx_graph =  networkx.read_gpickle(filename)
     return osmnx_graph
 
-load_osmnx_graph(".")
+load_osmnx_graph("./")
 
 def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph: ...
     # retorna un graf fusió de g1 i g2

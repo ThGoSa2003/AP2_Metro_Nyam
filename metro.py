@@ -107,8 +107,10 @@ def show(g: MetroGraph) -> None:
     plt.show()
 
 def plot(g: MetroGraph, filename: str) -> None:
-    positions = {}
-    for n in  nx.nodes(g):
-        positions[n] = n.pos
-    nx.draw_networkx(g,pos = positions, node_size = 10, with_labels = False)
-    plt.savefig(filename + ".png")
+    map = staticmap.StaticMap(1980, 1080)
+    for node in g.nodes:
+        map.add_marker(staticmap.CircleMarker(node.pos, "red", 10))
+    for edge in g.edges:
+        map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], "blue", 5))
+    image = map.render()
+    image.save(filename + ".png")
