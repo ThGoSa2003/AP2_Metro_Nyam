@@ -6,6 +6,7 @@ import pandas as pd
 import staticmap
 from metro import *
 import os
+from typing import Union
 
 CityGraph = networkx.Graph
 OsmnxGraph = networkx.MultiDiGraph
@@ -16,15 +17,15 @@ def get_osmnx_graph() -> OsmnxGraph:
 
 
 def save_osmnx_graph(g: OsmnxGraph, filename: str) -> None:
-    networkx.write_gpickle(g, filename=filename+".osm")
+    networkx.write_gpickle(g, path=filename+".gpickle")
 
 def load_osmnx_graph(filename: str) -> OsmnxGraph:
-    if not os.path.exists(filename + ".osm"):
-        save_osmnx_graph(get_osmnx_graph(), filename)
-    osmnx_graph =  networkx.read_gpickle(filename)
+    if not os.path.exists(filename + ".gpickle"):
+        save_osmnx_graph(get_osmnx_graph(),filename)
+    osmnx_graph =  networkx.read_gpickle(filename + ".gpickle")
     return osmnx_graph
 
-load_osmnx_graph("./")
+print(load_osmnx_graph("graph"))
 
 def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph: ...
     # retorna un graf fusió de g1 i g2
