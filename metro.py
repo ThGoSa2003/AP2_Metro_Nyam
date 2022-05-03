@@ -2,10 +2,10 @@ import networkx as nx
 import staticmap
 import pandas as pd
 from dataclasses import dataclass
-from typing import Optional, List
+from typing import Optional, List, Tuple
 import matplotlib.pyplot as plt
 
-Position = tuple[float,float]
+Position = Tuple[float,float]
 
 @dataclass
 class Station:
@@ -29,9 +29,9 @@ class Access:
     def __hash__(self):
         return hash(self.id_access)
 
-Stations = list[Station]
+Stations = List[Station]
 
-Accesses = list[Access]
+Accesses = List[Access]
 
 MetroGraph = nx.Graph
 
@@ -106,4 +106,11 @@ def show(g: MetroGraph) -> None:
     nx.draw_networkx(g,pos = positions, node_size = 10, with_labels = False)
     plt.show()
 
-def plot(g: MetroGraph, filename: str) -> None: ...
+show(get_metro_graph())
+def plot(g: MetroGraph, filename: str) -> None:
+    positions = {}
+    for n in  nx.nodes(g):
+        positions[n] = n.pos
+    nx.draw_networkx(g,pos = positions, node_size = 10, with_labels = False)
+    plt.savefig(filename + ".png")
+plot(get_metro_graph(), "metrograph")
