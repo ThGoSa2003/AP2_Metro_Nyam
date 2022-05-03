@@ -56,7 +56,6 @@ def get_metro_graph() -> MetroGraph:
         if stations[i].name == stations[i + 1].name:
             metro_graph.add_edge(stations[i], stations[i + 1], type = "enllaç",distance = distance(stations[i],stations[i+1]))
             metro_graph.add_edge(stations[i + 1], stations[i], type = "enllaç",distance = distance(stations[i],stations[i+1]))
-    accesses.sort(key = lambda a : (a.name_station,a.name))
     stations_dict = {}
     for s in stations:
         stations_dict[s.name] = s
@@ -107,5 +106,4 @@ def show(g: MetroGraph) -> None:
     nx.draw_networkx(g,pos = positions, node_size = 10, with_labels = False)
     plt.show()
 
-show(get_metro_graph())
 def plot(g: MetroGraph, filename: str) -> None: ...

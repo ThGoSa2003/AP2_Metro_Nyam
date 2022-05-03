@@ -1,4 +1,4 @@
-import networkx
+import networkx as nx
 import osmnx as ox
 import haversine
 import pandas
@@ -24,11 +24,14 @@ def get_osmnx_graph() -> OsmnxGraph:
 
 
 def save_osmnx_graph(g: OsmnxGraph, filename: str) -> None:
-    ox.save_load.save_graph_osm(g, filename=filename+".osm")
+    nx.write_gpickle(g, filename=filename+".osm")
+
 def load_osmnx_graph(filename: str) -> OsmnxGraph:
     if not os.path.exists(filename + ".osm"):
         save_osmnx_graph(get_osmnx_graph(), filename)
-    
+    osmnx_graph =  networkx.read_gpickle(filename)
+    return osmnx_graph
+
 
 def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph: ...
     # retorna un graf fusió de g1 i g2
@@ -47,5 +50,5 @@ def show(g: CityGraph) -> None: ...
     # mostra g de forma interactiva en una finestra
 def plot(g: CityGraph, filename: str) -> None: ...
     # desa g com una imatge amb el mapa de la cuitat de fons en l'arxiu filename
-def plot_path(g: CityGraph, p: Path, filename: str, ...) -> None: ...
+def plot_path(g: CityGraph, p: Path, filename: str) -> None: ...
     # mostra el camí p en l'arxiu filename
