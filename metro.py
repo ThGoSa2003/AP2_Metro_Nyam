@@ -106,11 +106,9 @@ def show(g: MetroGraph) -> None:
     nx.draw_networkx(g,pos = positions, node_size = 10, with_labels = False)
     plt.show()
 
-show(get_metro_graph())
 def plot(g: MetroGraph, filename: str) -> None:
     positions = {}
     for n in  nx.nodes(g):
         positions[n] = n.pos
     nx.draw_networkx(g,pos = positions, node_size = 10, with_labels = False)
     plt.savefig(filename + ".png")
-plot(get_metro_graph(), "metrograph")

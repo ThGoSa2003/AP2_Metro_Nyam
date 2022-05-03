@@ -1,19 +1,11 @@
-import networkx as nx
+import networkx
 import osmnx as ox
 import haversine
 import pandas
 import pandas as pd
 import staticmap
 from metro import *
-
-
-url = 'https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/restaurants.csv'
-csv_restaurants = pd.read_csv(url)
-url = 'https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/blob/main/estacions.csv'
-csv_restaurants = pd.read_csv(url)
-url = 'https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/blob/main/accessos.csv'
-csv_restaurants = pd.read_csv(url)
-
+import os
 
 CityGraph = networkx.Graph
 OsmnxGraph = networkx.MultiDiGraph
@@ -24,7 +16,7 @@ def get_osmnx_graph() -> OsmnxGraph:
 
 
 def save_osmnx_graph(g: OsmnxGraph, filename: str) -> None:
-    nx.write_gpickle(g, filename=filename+".osm")
+    networkx.write_gpickle(g, filename=filename+".osm")
 
 def load_osmnx_graph(filename: str) -> OsmnxGraph:
     if not os.path.exists(filename + ".osm"):
@@ -32,6 +24,7 @@ def load_osmnx_graph(filename: str) -> OsmnxGraph:
     osmnx_graph =  networkx.read_gpickle(filename)
     return osmnx_graph
 
+load_osmnx_graph(".")
 
 def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph: ...
     # retorna un graf fusió de g1 i g2
