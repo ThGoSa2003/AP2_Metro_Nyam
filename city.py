@@ -1,5 +1,5 @@
 import networkx
-import osmnx
+import osmnx as ox
 import haversine
 import pandas
 import pandas as pd
@@ -16,16 +16,15 @@ csv_restaurants = pd.read_csv(url)
 
 
 CityGraph = networkx.Graph
-
-
-def get_osmnx_graph() -> OsmnxGraph: ...
-
-
 OsmnxGraph = networkx.MultiDiGraph
 
 
-def save_osmnx_graph(g: OsmnxGraph, filename: str) -> None: ...
-    # guarda el graf g al fitxer filename
+def get_osmnx_graph() -> OsmnxGraph:
+    return ox.graph_from_place("Barcelona, Spain", network_type = "walk")
+
+
+def save_osmnx_graph(g: OsmnxGraph, filename: str) -> None:
+    ox.save_load.save_graph_osm(g, filename=filename+".osm")
 def load_osmnx_graph(filename: str) -> OsmnxGraph: ...
     # retorna el graf guardat al fitxer filename
 
