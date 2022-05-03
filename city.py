@@ -25,9 +25,10 @@ def get_osmnx_graph() -> OsmnxGraph:
 
 def save_osmnx_graph(g: OsmnxGraph, filename: str) -> None:
     ox.save_load.save_graph_osm(g, filename=filename+".osm")
-def load_osmnx_graph(filename: str) -> OsmnxGraph: ...
-    # retorna el graf guardat al fitxer filename
-
+def load_osmnx_graph(filename: str) -> OsmnxGraph:
+    if not os.path.exists(filename + ".osm"):
+        save_osmnx_graph(get_osmnx_graph(), filename)
+    
 
 def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph: ...
     # retorna un graf fusió de g1 i g2
