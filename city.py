@@ -27,8 +27,8 @@ def load_osmnx_graph(filename: str) -> OsmnxGraph:
 
 print(load_osmnx_graph("graph"))
 
-def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph: ...
-    # retorna un graf fusió de g1 i g2
+def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
+    
 
 
 Coord = (float, float)   # (latitude, longitude)
@@ -40,9 +40,21 @@ Path = List[NodeID]
 def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path: ...
 
 
-def show(g: CityGraph) -> None: ...
-    # mostra g de forma interactiva en una finestra
-def plot(g: CityGraph, filename: str) -> None: ...
-    # desa g com una imatge amb el mapa de la cuitat de fons en l'arxiu filename
+def show(g: CityGraph) -> None:
+    positions = {}
+    for n in  nx.nodes(g):
+        positions[n] = n.pos
+    nx.draw_networkx(g,pos = positions, node_size = 10, with_labels = False)
+    plt.show()
+
+def plot(g: CityGraph, filename: str) -> None:
+    map = staticmap.StaticMap(1980, 1080)
+    for node in g.nodes:
+        map.add_marker(staticmap.CircleMarker(node.pos, "red", 10))
+    for edge in g.edges:
+        map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], "blue", 5))
+    image = map.render()
+    image.save(filename + ".png")
+
 def plot_path(g: CityGraph, p: Path, filename: str) -> None: ...
     # mostra el camí p en l'arxiu filename
