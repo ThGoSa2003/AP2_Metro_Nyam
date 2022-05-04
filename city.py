@@ -17,15 +17,14 @@ def get_osmnx_graph() -> OsmnxGraph:
 
 
 def save_osmnx_graph(g: OsmnxGraph, filename: str) -> None:
-    networkx.write_gpickle(g, filename=filename+".osm")
+    networkx.write_gpickle(g, path=filename+".gpickle")
 
 def load_osmnx_graph(filename: str) -> OsmnxGraph:
-    if not os.path.exists(filename + ".osm"):
-        save_osmnx_graph(get_osmnx_graph(), filename)
-    osmnx_graph =  networkx.read_gpickle(filename)
+    if not os.path.exists(filename + ".gpickle"):
+        save_osmnx_graph(get_osmnx_graph(),filename)
+    osmnx_graph =  networkx.read_gpickle(filename + ".gpickle")
     return osmnx_graph
 
-load_osmnx_graph("./")
 
 def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
 
@@ -51,7 +50,19 @@ Coord = (float, float)   # (latitude, longitude)
 Node = Union[Access, Station, Dict[int:Dict[str:int]]]
 Path = List[Node]
 
-def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path: ...
+def find_closest_node(g: Optional[City_graph], src: Coord) -> :
+    min = float("inf")
+    closest_node = 0
+    for node in g.nodes():
+        distance = ((src[0] - node.pos[0])**2 + (src[1] - node.pos[1])**2)**1/2
+        if distance < min:
+            min = distance
+            closest_node = node
+    return closest_node
+
+
+def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
+    return shortest_path()
 
 
 def show(g: CityGraph) -> None:
