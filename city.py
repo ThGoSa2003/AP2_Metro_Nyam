@@ -46,7 +46,19 @@ Coord = (float, float)   # (latitude, longitude)
 NodeID = Union[int, str]
 Path = List[NodeID]
 
-def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path: ...
+def find_closest_node(g: Optional[City_graph], src: Coord) -> :
+    min = float("inf")
+    closest_node = 0
+    for node in g.nodes():
+        distance = ((src[0] - node.pos[0])**2 + (src[1] - node.pos[1])**2)**1/2
+        if distance < min:
+            min = distance
+            closest_node = node
+    return closest_node
+
+
+def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
+    return shortest_path()
 
 
 def show(g: CityGraph) -> None:
