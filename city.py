@@ -25,10 +25,9 @@ def load_osmnx_graph(filename: str) -> OsmnxGraph:
     osmnx_graph =  networkx.read_gpickle(filename + ".gpickle")
     return osmnx_graph
 
-print(load_osmnx_graph("graph"))
 
 def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
-    
+
 
 
 Coord = (float, float)   # (latitude, longitude)
