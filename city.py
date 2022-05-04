@@ -28,6 +28,16 @@ def load_osmnx_graph(filename: str) -> OsmnxGraph:
 
 def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
 
+    city_graph = nx.Graph()
+    city_graph.add_nodes_from(node for node in g1.nodes)
+    city_graph.add_nodes_from(node for node in g2.nodes)
+    for edge in g1.edge.data():
+        city_graph.add_edge(edge)
+    for edge in g2.edge.data():
+        city_graph.add_edge(edge)
+    for node in g2.nodes:
+        if type(node) is Access:
+            ...
 
 
 Coord = (float, float)   # (latitude, longitude)
