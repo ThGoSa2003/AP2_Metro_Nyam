@@ -48,8 +48,8 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
 Coord = (float, float)   # (latitude, longitude)
 
 
-Node = Union[Access, Station]
-Path = List[NodeID]
+Node = Union[Access, Station, Dict[int:Dict[str:int]]]
+Path = List[Node]
 
 def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path: ...
 
