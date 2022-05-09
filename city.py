@@ -47,6 +47,7 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
 
     city_graph.add_nodes_from(metro_nodes)
     city_graph.add_nodes_from(st_nodes)
+<<<<<<< HEAD
     city_graph.add_edges_from(g2.edges.data())
 
     for edge_n_atribiute in g1.edges.data():
@@ -55,6 +56,13 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
         else:
             city_graph.add_edge(edge_n_atribiute[0],edge_n_atribiute[1],distance = edge_n_atribiute[2]['length'])
 
+=======
+    for edge in g2.edge.data():
+        city_graph.add_edge(edge)
+    for edge in g1.edge.data():
+        city_graph.add_edge(st_nodes[edge[0]], st_nodes[edge[1]], type="walk", distance=edge[2].length)
+        city_graph.add_edge(st_nodes[edge[1]], st_nodes[edge[2]], type="walk", distance=edge[2].length)
+>>>>>>> refs/remotes/origin/develop
     for node in g2.nodes:
         if type(node) is Access:
             closest_st_node = ox.distance.nearest_nodes(g1, node.pos[0], node.pos[1])
