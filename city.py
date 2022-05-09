@@ -71,8 +71,8 @@ def find_closest_node(g: Optional[City_graph], src: Coord) -> :
 
 
 def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
-    return shortest_path()
-
+    src_node = osmnx.distance.nearest_nodes(ox_g,src[0],src[1])
+    dst_node = osmnx.distance.nearest_nodes(ox_g,dst[0],dst[1])
 
 def show(g: CityGraph) -> None:
     positions = {}
