@@ -1,7 +1,6 @@
 import networkx
 import osmnx as ox
 import haversine
-import pandas
 import pandas as pd
 import staticmap
 from metro import *
@@ -44,9 +43,9 @@ St_nodes = List[St_node]
 def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
 
     city_graph = networkx.Graph()
-    metro_nodes = [node for node in g2.nodes] # no ints here
-    st_nodes_dict = {k : St_node(k, (v['x'], v['y'])) for k, v in g1.nodes.data()}
+    metro_nodes = [node for node in g2.nodes]
 
+    st_nodes_dict = {k : St_node(k, (v['x'], v['y'])) for k, v in g1.nodes.data()}
     st_nodes = [St_node(k, (v['x'], v['y'])) for k, v in g1.nodes.data()]
     st_nodes.sort(key = lambda s : (s.id))
 
@@ -71,7 +70,6 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
 
     return city_graph
 
-show(load_city_graph("./graph","./city_graph"))
 
 Coord = (float, float)   # (latitude, longitude)
 
@@ -81,18 +79,18 @@ Path = List[Node]
 
 
 def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
-    src_node = osmnx.distance.nearest_nodes(ox_g,src[0],src[1])
-    dst_node = osmnx.distance.nearest_nodes(ox_g,dst[0],dst[1])
+    src_node = ox.distance.nearest_nodes(ox_g,src[0],src[1])
+    dst_node = ox.distance.nearest_nodes(ox_g,dst[0],dst[1])
 
     for node in g.nodes:
-        if type(src_node) == int or type(dts_node) == int:
+        if type(src_node) == int or type(dst_node) == int:
             if src_node == node.id:
                 src_node = node
             elif dst_node == node.id:
                 dst_node = node
         else:
             break
-
+    print(src_node in g, dst_node in g ,dst_node)
     return networkx.shortest_path(g, src_node, dst_node, weight = distance)
 
 def show(g: CityGraph) -> None:
@@ -113,8 +111,13 @@ def plot(g: CityGraph, filename: str) -> None:
 
 def plot_path(g: CityGraph, p: Path, filename: str) -> None:
     map = staticmap.StaticMap(1980, 1080)
-    node_map = {node.id: node for node in g.nodes.data()}
     edge_map = {(edge[0], edge[1])}
     for nodeid in p:
         map.add_marker(staticmap.CircleMarker(node_map[nodeid].pos, "red", 10))
-    for i in range():...
+    image = map.render()
+    image.save(filename + ".png")
+
+c_t = load_city_graph("./graph","./city_graph")
+o_g = load_osmnx_graph("./graph")
+plot_path(c_t, find_path(o_g,c_t,(42,1),(42,3)),"./city_image") # there is a bug here for some reason
+# some nodes from osmnx have not been added, must fix build_city_graph
