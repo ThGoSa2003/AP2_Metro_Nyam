@@ -42,9 +42,9 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
     st_nodes.sort(key = lambda s : (s.id_node))
     city_graph.add_nodes_from(metro_nodes)
     city_graph.add_nodes_from(st_nodes)
-    for edge in g1.edge.data():
-        city_graph.add_edge(edge)
     for edge in g2.edge.data():
+        city_graph.add_edge(edge)
+    for edge in g1.edge.data():
         city_graph.add_edge(st_nodes[edge[0]], st_nodes[edge[1]], type="walk", distance=edge[2].length)
         city_graph.add_edge(st_nodes[edge[1]], st_nodes[edge[2]], type="walk", distance=edge[2].length)
     for node in g2.nodes:
