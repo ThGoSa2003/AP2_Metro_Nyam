@@ -24,23 +24,34 @@ def load_osmnx_graph(filename: str) -> OsmnxGraph:
     osmnx_graph =  networkx.read_gpickle(filename + ".gpickle")
     return osmnx_graph
 
+@dataclass
+class St_node:
+    id_node: int
+    pos: Position
+
+    def __hash__(self):
+        return hash(self.id_node)
+
+St_nodes = List[St_node]
+
 def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
 
     city_graph = nx.Graph()
     metro_nodes = [node for node in g2.nodes.data()]
-    st_nodes = [node for node in g1.nodes.data()]
+    st_nodes = [St_node(k, (v.x, v.y)) for k, v in g1.nodes.data()]
+    st_nodes.sort(key = lambda s : (s.id_node))
     city_graph.add_nodes_from(metro_nodes)
     city_graph.add_nodes_from(st_nodes)
     for edge in g1.edge.data():
         city_graph.add_edge(edge)
     for edge in g2.edge.data():
-        city_graph.add_edge(edge)
+        city_graph.add_edge(st_nodes[edge[0]], st_nodes[edge[1]], type="walk", distance=edge[2].length)
+        city_graph.add_edge(st_nodes[edge[1]], st_nodes[edge[2]], type="walk", distance=edge[2].length)
     for node in g2.nodes:
         if type(node) is Access:
-
-            for st_node in st_nodes:
-
-
+            closest_st_node = ox.distance.nearest_nodes(g1, node.pos[0], node.pos[1])
+            city_graph.add_edge(node, st_nodes[closest_st_node], type = "walk", distance = distance(node, st_nodes[closest_st_node]))
+            city_graph.add_edge(node, st_nodes[closest_st_node], type = "walk", distance = distance(node, st_nodes[closest_st_node]))
 
 Coord = (float, float)   # (latitude, longitude)
 
