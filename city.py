@@ -61,6 +61,14 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
             city_graph.add_edge(node[0], st_nodes_dict[closest_st_node], type = "walk", distance = distance(node[0], st_nodes_dict[closest_st_node]))
     return city_graph
 show(build_city_graph(load_osmnx_graph("./graph"),get_metro_graph()))
+    for node in g2.nodes:
+        if type(node) is Access:
+            closest_st_node = ox.distance.nearest_nodes(g1, node.pos[0], node.pos[1])
+            print(closest_st_node)
+            city_graph.add_edge(node, st_nodes_dict[closest_st_node], type = "walk", distance = distance(node, st_nodes_dict[closest_st_node]))
+
+build_city_graph(load_osmnx_graph("./graph"),get_metro_graph())
+>>>>>>> 444d24c3b43df4929797380c8e88ff5bc3b2f353
 
 Coord = (float, float)   # (latitude, longitude)
 
