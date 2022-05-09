@@ -6,7 +6,7 @@ import pandas as pd
 import staticmap
 from metro import *
 import os
-from typing import Optional, Tuple, List, Union
+from typing import Optional, Tuple, List, Union, Dict
 
 CityGraph = networkx.Graph
 OsmnxGraph = networkx.MultiDiGraph
@@ -37,46 +37,39 @@ St_nodes = List[St_node]
 def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
 
     city_graph = networkx.Graph()
-
-    metro_nodes = [node[0] for node in g2.nodes.data()]
+    metro_nodes = [node for node in g2.nodes] # no ints here
     st_nodes_dict = {k : St_node(k, (v['x'], v['y'])) for k, v in g1.nodes.data()}
 
     st_nodes = [St_node(k, (v['x'], v['y'])) for k, v in g1.nodes.data()]
     st_nodes.sort(key = lambda s : (s.id))
 
-    city_graph.add_nodes_from(metro_nodes)
     city_graph.add_nodes_from(st_nodes)
-    city_graph.add_edges_from(g2.edges.data())
 
     for edge_n_atribiute in g1.edges.data():
-        if 'name' in edge_n_atribiute[2]:
-            city_graph.add_edge(edge_n_atribiute[0],edge_n_atribiute[1],distance = edge_n_atribiute[2]['length'], street_name = edge_n_atribiute[2]['name'])
-        else:
-            city_graph.add_edge(edge_n_atribiute[0],edge_n_atribiute[1],distance = edge_n_atribiute[2]['length'])
+        if(edge_n_atribiute[0] != edge_n_atribiute[1]):
+            node1 = st_nodes_dict[edge_n_atribiute[0]]
+            node2 = st_nodes_dict[edge_n_atribiute[1]]
+            if 'name' in edge_n_atribiute[2]:
+                city_graph.add_edge(node1,node2,distance = edge_n_atribiute[2]['length'], street_name = edge_n_atribiute[2]['name'])
+            else:
+                city_graph.add_edge(node1,node2,distance = edge_n_atribiute[2]['length'])
 
-<<<<<<< HEAD
-=======
+    city_graph.add_edges_from(g2.edges.data())
+    city_graph.add_nodes_from(metro_nodes)
+
     for node in g2.nodes.data():
-        print(type(node[0]) is Access, " A: ", node[0])
         if type(node[0]) is Access:
             closest_st_node = ox.distance.nearest_nodes(g1, node[0].pos[0], node[0].pos[1])
             city_graph.add_edge(node[0], st_nodes_dict[closest_st_node], type = "walk", distance = distance(node[0], st_nodes_dict[closest_st_node]))
-    return city_graph
-show(build_city_graph(load_osmnx_graph("./graph"),get_metro_graph()))
->>>>>>> ce7ad2d142f84a39cca6c0e234ce775f575e3c97
-    for node in g2.nodes:
-        if type(node) is Access:
-            closest_st_node = ox.distance.nearest_nodes(g1, node.pos[0], node.pos[1])
-            print(closest_st_node)
-            city_graph.add_edge(node, st_nodes_dict[closest_st_node], type = "walk", distance = distance(node, st_nodes_dict[closest_st_node]))
 
-build_city_graph(load_osmnx_graph("./graph"),get_metro_graph())
->>>>>>> 444d24c3b43df4929797380c8e88ff5bc3b2f353
+    return city_graph
+
+show(build_city_graph(load_osmnx_graph("./graph"),get_metro_graph()))
 
 Coord = (float, float)   # (latitude, longitude)
 
 
-Node = Union[Access, Station, Dict[int:Dict[str:int]]]
+Node = Union[Access, Station]
 Path = List[Node]
 """
 def find_closest_node(g: Optional[City_graph], src: Coord) -> :

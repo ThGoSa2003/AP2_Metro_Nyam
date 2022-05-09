@@ -98,11 +98,9 @@ def read_accesses() -> Accesses:
         accesses.append(Access(ides, name,accessibility,name_station,pos))
     return accesses
 
-
 def show(g: MetroGraph) -> None:
     positions = {}
-    for n in  nx.nodes(g):
-        print(n)
+    for n in nx.nodes(g):
         positions[n] = n.pos
     nx.draw_networkx(g,pos = positions, node_size = 10, with_labels = False)
     plt.show()
