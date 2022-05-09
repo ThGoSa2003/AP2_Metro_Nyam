@@ -35,12 +35,13 @@ Accesses = List[Access]
 
 MetroGraph = nx.Graph
 
+def distance(station1: Optional[Station], station2: Optional[Station]) -> float:
+    return ((station1.pos[0] - station2.pos[0])**2 + (station1.pos[1] - station2.pos[1])**2)**1/2
+
 def get_metro_graph() -> MetroGraph:
     """
 
     """
-    def distance(station1: Optional[Station], station2: Optional[Station]) -> float:
-        return ((station1.pos[0] - station2.pos[0])**2 + (station1.pos[1] - station2.pos[1])**2)**1/2
 
     stations = read_stations()
     accesses = read_accesses()
