@@ -52,7 +52,7 @@ class Restaurant:
         """
 
         for attribute, value in vars(self).items():
-            if query in str(value):
+            if query.lower() in str(value).lower():
                 return True
         return False
 
