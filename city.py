@@ -15,7 +15,6 @@ OsmnxGraph = networkx.MultiDiGraph
 def get_osmnx_graph() -> OsmnxGraph:
     return ox.graph_from_place("Barcelona, Spain", network_type = "walk")
 
-
 def save_osmnx_graph(g: OsmnxGraph, filename: str) -> None:
     networkx.write_gpickle(g, path=filename+".gpickle")
 
@@ -24,7 +23,6 @@ def load_osmnx_graph(filename: str) -> OsmnxGraph:
         save_osmnx_graph(get_osmnx_graph(),filename)
     osmnx_graph =  networkx.read_gpickle(filename + ".gpickle")
     return osmnx_graph
-
 
 def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
 
