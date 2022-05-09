@@ -24,6 +24,7 @@ def load_osmnx_graph(filename: str) -> OsmnxGraph:
     osmnx_graph =  networkx.read_gpickle(filename + ".gpickle")
     return osmnx_graph
 
+
 def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
 
     city_graph = nx.Graph()
@@ -60,8 +61,8 @@ def find_closest_node(g: Optional[City_graph], src: Coord) -> :
 
 
 def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
-    return shortest_path()
-
+    src_node = osmnx.distance.nearest_nodes(ox_g,src[0],src[1])
+    dst_node = osmnx.distance.nearest_nodes(ox_g,dst[0],dst[1])
 
 def show(g: CityGraph) -> None:
     positions = {}
