@@ -21,8 +21,15 @@ def save_osmnx_graph(g: OsmnxGraph, filename: str) -> None:
 def load_osmnx_graph(filename: str) -> OsmnxGraph:
     if not os.path.exists(filename + ".gpickle"):
         save_osmnx_graph(get_osmnx_graph(),filename)
-    osmnx_graph =  networkx.read_gpickle(filename + ".gpickle")
-    return osmnx_graph
+    return networkx.read_gpickle(filename + ".gpickle")
+
+def save_city_graph(g: CityGraph, filename: str) -> None:
+    networkx.write_gpickle(g, path=filename+".gpickle")
+
+def load_city_graph(filename_osmnx: str, filename_city: str) -> CityGraph:
+    if not os.path.exists(filename_city + ".gpickle"):
+        save_city_graph(build_city_graph(load_osmnx_graph(filename_osmnx),get_metro_graph()),filename_city)
+    return networkx.read_gpickle(filename_city + ".gpickle")
 
 @dataclass
 class St_node:
@@ -64,28 +71,29 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
 
     return city_graph
 
-show(build_city_graph(load_osmnx_graph("./graph"),get_metro_graph()))
+show(load_city_graph("./graph","./city_graph"))
 
 Coord = (float, float)   # (latitude, longitude)
 
 
 Node = Union[Access, Station]
 Path = List[Node]
-"""
-def find_closest_node(g: Optional[City_graph], src: Coord) -> :
-    min = float("inf")
-    closest_node = 0
-    for node in g.nodes():
-        distance = ((src[0] - node.pos[0])**2 + (src[1] - node.pos[1])**2)**1/2
-        if distance < min:
-            min = distance
-            closest_node = node
-    return closest_node
-"""
+
 
 def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
     src_node = osmnx.distance.nearest_nodes(ox_g,src[0],src[1])
     dst_node = osmnx.distance.nearest_nodes(ox_g,dst[0],dst[1])
+
+    for node in g.nodes:
+        if type(src_node) == int or type(dts_node) == int:
+            if src_node == node.id:
+                src_node = node
+            elif dst_node == node.id:
+                dst_node = node
+        else:
+            break
+
+    return networkx.shortest_path(g, src_node, dst_node, weight = distance)
 
 def show(g: CityGraph) -> None:
     positions = {}
