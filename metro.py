@@ -9,25 +9,25 @@ Position = Tuple[float,float]
 
 @dataclass
 class Station:
-    id_station: int
+    id: int
     name: str
     order: int
     line: str
     pos: Position
 
     def __hash__(self):
-        return hash(self.id_station)
+        return hash(self.id)
 
 @dataclass
 class Access:
-    id_access: int
+    id: int
     name: str
     accessibility: bool
     name_station: str
     pos: Position
 
     def __hash__(self):
-        return hash(self.id_access)
+        return hash(self.id)
 
 Stations = List[Station]
 
@@ -37,7 +37,6 @@ MetroGraph = nx.Graph
 
 def distance(station1: Optional[Station], station2: Optional[Station]) -> float:
     return ((station1.pos[0] - station2.pos[0])**2 + (station1.pos[1] - station2.pos[1])**2)**1/2
-
 def get_metro_graph() -> MetroGraph:
     """
 
@@ -74,12 +73,12 @@ def read_stations() -> Stations:
     dim = csv_stations.shape
     stations = []
     for i in range(dim[0]):
-        id_station = csv_stations.iloc[i, 5]
+        id = csv_stations.iloc[i, 5]
         name = csv_stations.iloc[i,7]
         order = csv_stations.iloc[i,8]
         line = csv_stations.iloc[i,11]
         pos = tuple(map(float,csv_stations.iloc[i,26][7:-1].split()))
-        stations.append(Station(id_station,name,order,line,pos))
+        stations.append(Station(id,name,order,line,pos))
     return stations
 
 def read_accesses() -> Accesses:
@@ -91,18 +90,19 @@ def read_accesses() -> Accesses:
     dim = csv_accesses.shape
     accesses = []
     for i in range(dim[0]):
-        id_accesses = csv_accesses.iloc[i, 1]
+        ides = csv_accesses.iloc[i, 1]
         name = csv_accesses.iloc[i,3]
         accessibility = csv_accesses.iloc[i,8] == "Accessible"
         name_station = csv_accesses.iloc[i,6]
         pos = tuple(map(float,csv_accesses.iloc[i,-1][7:-1].split()))
-        accesses.append(Access(id_accesses, name,accessibility,name_station,pos))
+        accesses.append(Access(ides, name,accessibility,name_station,pos))
     return accesses
 
 
 def show(g: MetroGraph) -> None:
     positions = {}
     for n in  nx.nodes(g):
+        print(n)
         positions[n] = n.pos
     nx.draw_networkx(g,pos = positions, node_size = 10, with_labels = False)
     plt.show()
