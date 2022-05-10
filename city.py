@@ -55,9 +55,9 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
             node1 = st_nodes_dict[edge_n_atribiute[0]]
             node2 = st_nodes_dict[edge_n_atribiute[1]]
             if 'name' in edge_n_atribiute[2]:
-                city_graph.add_edge(node1,node2,distance = edge_n_atribiute[2]['length'], street_name = edge_n_atribiute[2]['name'])
+                city_graph.add_edge(node1,node2,distance = edge_n_atribiute[2]['length'], street_name = edge_n_atribiute[2]['name'], type = "walk")
             else:
-                city_graph.add_edge(node1,node2,distance = edge_n_atribiute[2]['length'])
+                city_graph.add_edge(node1,node2,distance = edge_n_atribiute[2]['length'], type = "walk")
 
     city_graph.add_edges_from(g2.edges.data())
     city_graph.add_nodes_from(metro_nodes)
@@ -78,6 +78,22 @@ Path = List[Node]
 
 
 def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
+
+    def w(n1, n2, d):
+        type = d['type']
+        vel = 0
+        if type == 'walk':
+            vel = 2
+        elif type == 'tram':
+            vel = 10
+        elif type == 'enllaç':
+            vel = 10000
+        elif type == 'acces':
+            vel = 2
+        else:
+            vel = 1
+        return d['distance'] / vel
+
     src_node = ox.distance.nearest_nodes(ox_g,src[0],src[1])
     dst_node = ox.distance.nearest_nodes(ox_g,dst[0],dst[1])
     print(src_node, dst_node)
@@ -90,7 +106,7 @@ def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
         else:
             break
 
-    return networkx.shortest_path(g, src_node, dst_node, weight = "distance")
+    return networkx.shortest_path(g, src_node, dst_node, weight = w)
 
 def show(g: CityGraph) -> None:
     positions = {}
@@ -102,14 +118,24 @@ def show(g: CityGraph) -> None:
 def plot(g: CityGraph, filename: str) -> None:
     map = staticmap.StaticMap(1980, 1080)
     for node in g.nodes:
-        map.add_marker(staticmap.CircleMarker(node.pos, "red", 10))
-    for edge in g.edges:
-        map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], "blue", 5))
+        if type(node) == Station:
+            map.add_marker(staticmap.CircleMarker(node.pos, "red", 1))
+        if type(node) == Access:
+            map.add_marker(staticmap.CircleMarker(node.pos, "black", 1))
+        if type(node) == St_node:
+            map.add_marker(staticmap.CircleMarker(node.pos, "green", 1))
+    for edge in g.edges.data():
+        if edge[2]['type'] == 'walk':
+            map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], "yellow", 0))
+        elif edge[2]['type'] == 'tram':
+            map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], "blue", 0))
+        else:
+            map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], "orange", 0))
     image = map.render()
     image.save(filename + ".png")
 
 def plot_path(g: CityGraph, p: Path, filename: str) -> None:
-    map = staticmap.StaticMap(1980, 1080)
+    map = staticmap.StaticMap(8000, 8000)
     for i in range(len(p) - 1):
         if type(p[i]) == Station and type(p[i+1]) == Station:
             map.add_line(staticmap.Line((p[i].pos,p[i + 1].pos), 'red', 3))
@@ -126,5 +152,6 @@ def plot_path(g: CityGraph, p: Path, filename: str) -> None:
 
 c_t = load_city_graph("./graph","./city_graph")
 o_g = load_osmnx_graph("./graph")
-plot_path(c_t, find_path(o_g,c_t,(2.0713,41.2877),(2.1986,41.4592)),"./city_image") # there is a bug here for some reason
+plot(c_t,"./city_image")
+#plot_path(c_t, find_path(o_g,c_t,(2.0713,41.2877),(2.1986,41.4592)),"./city_image") # there is a bug here for some reason
 # some nodes from osmnx have not been added, must fix build_city_graph
