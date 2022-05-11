@@ -97,6 +97,7 @@ def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
     src_node = ox.distance.nearest_nodes(ox_g,src[0],src[1])
     dst_node = ox.distance.nearest_nodes(ox_g,dst[0],dst[1])
     print(src_node, dst_node)
+    # Hi ha nodes dolents.
     for node in g.nodes:
         if type(src_node) == int or type(dst_node) == int:
             if src_node == node.id:

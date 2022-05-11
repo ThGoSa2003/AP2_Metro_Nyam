@@ -41,7 +41,7 @@ class Restaurant:
     secondary_filters_tree: int
     secondary_filters_asia_id: int
     geo_epgs_25831_x: float
-    geo_epgs_25831_y: int
+    geo_epgs_25831_y: float
     geo_epgs_4326_x: float
     geo_epgs_4326_y: float
 
