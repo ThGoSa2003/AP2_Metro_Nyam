@@ -8,7 +8,7 @@ class Bot:
     all_restaurants: Restaurants
     restaurants_of_the_search: Restaurants
 
-    def __init__(self, current_position: Coord):
+    def __init__(self):
         self.current_position = (0,0)
         self.st_graph = load_osmnx_graph("graph")
         self.city_graph = load_city_graph("graph", "city_graph")
@@ -59,7 +59,7 @@ def main():
 
     bot = Bot()
 
-    TOKEN = open('token.txt').read().strip()
+    TOKEN = open('./token.txt', "w+").read().strip()
     updater = Updater(token=TOKEN, use_context=True)
     dispatcher = updater.dispatcher
 

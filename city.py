@@ -150,9 +150,9 @@ def plot_path(g: CityGraph, p: Path, filename: str) -> None:
 
     image = map.render()
     image.save(filename + ".png")
-
+"""
 c_t = load_city_graph("./graph","./city_graph")
 o_g = load_osmnx_graph("./graph")
-plot(c_t,"./city_image")
+plot(c_t,"./city_image")"""
 #plot_path(c_t, find_path(o_g,c_t,(2.0713,41.2877),(2.1986,41.4592)),"./city_image") # there is a bug here for some reason
 # some nodes from osmnx have not been added, must fix build_city_graph
