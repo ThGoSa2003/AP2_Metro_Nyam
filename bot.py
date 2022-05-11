@@ -7,18 +7,23 @@ class Bot:
     current_position: Coord
     city_graph: CityGraph
 
+    def __init__(self, current_position: Coord):
+        self.current_position = (0,0)
+        city_graph = load_city_graph("graph", "city_graph")
 
-    def start(update, context):
+    def start(self, update, context):
         context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text="Hola! Soc un bot per trobar la ruta més ")
+            text="Hola! Soc un bot per trobar la ruta més ràpida al restaurant que vulguis de Barcelona. \
+                    Abans de res escriu-me la posició on et trobes.")
+        
 
-    def help(update, context):
+    def help(self, update, context):
         context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text="Hola! Soc un bot.")
+            text="Les comandes que pots utilitzar són les següents:")
 
-    def author(update, context):
+    def author(self, update, context):
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text="Aquest programa està fet per Oriol López Petit i Thomas González Saito.")
