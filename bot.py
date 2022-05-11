@@ -53,7 +53,7 @@ class Bot:
 
     def guide(self, update, context):
         numero = int(context.args[0])
-        plot_path(self.city_graph, find_path(st_graph, city_graph, self.current_position, self.restaurants_of_the_search[numero].pos))
+        plot_path(self.city_graph, find_path(st_graph, city_graph, self.current_position, self.restaurants_of_the_search[numero].pos), "path")
 
 def main():
 
