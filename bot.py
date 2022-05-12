@@ -1,15 +1,16 @@
 from restaurants import *
 from city import *
-from telegram.ext import Updater, CommandHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler
+from telegram.ext.filters import Filters
+
+
 
 class Bot:
-    current_position: Coord
     city_graph: CityGraph
     all_restaurants: Restaurants
     restaurants_of_the_search: Restaurants
 
     def __init__(self):
-        self.current_position = (0,0)
         self.st_graph = load_osmnx_graph("graph")
         self.city_graph = load_city_graph("graph", "city_graph")
         self.all_restaurants = read()
@@ -53,14 +54,29 @@ class Bot:
 
     def guide(self, update, context):
         numero = int(context.args[0])
-        plot_path(self.city_graph, find_path(st_graph, city_graph, self.current_position, self.restaurants_of_the_search[numero].pos), "path")
+        plot_path(self.city_graph, find_path(self.st_graph,
+            self.city_graph, update.message.location,
+            self.restaurants_of_the_search[numero].pos),
+            "path")
+        context.bot.send_photo(
+            chat_id=update.effective_chat.id,
+            photo=open("path.png", 'rb'))
+        os.remove("path_bot.png")
 
+"""
+    def unknown(update, context):
+        update.message.reply_text(
+            "Sorry '%s' is not a valid command" % update.message.text)
+
+
+    def unknown_text(update, context):
+        update.message.reply_text(
+            "Sorry I can't recognize you , you said '%s'" % update.message.text)
+"""
 def main():
 
     bot = Bot()
-
-    TOKEN = open('./token.txt', "w+").read().strip()
-    updater = Updater(token=TOKEN, use_context=True)
+    updater = Updater("5321497109:AAGV1x85pE9xvVicVyihaNJV6FcdR2QTe1s", use_context=True)
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(CommandHandler('start', bot.start))
@@ -69,7 +85,14 @@ def main():
     dispatcher.add_handler(CommandHandler('find', bot.find))
     dispatcher.add_handler(CommandHandler('info', bot.info))
     dispatcher.add_handler(CommandHandler('guide', bot.guide))
+    """
+    dispatcher.add_handler(MessageHandler(Filters.text, unknown))
+    dispatcher.add_handler(MessageHandler(
+    command, unknown))  # Filters out unknown commands
 
+    # Filters out unknown messages.
+    updater.dispatcher.add_handler(MessageHandler(Filters.text, unknown_text))
+    """
     updater.start_polling()
 
 if __name__ == "__main__":
