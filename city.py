@@ -1,15 +1,15 @@
 import networkx
 import osmnx as ox
+import dataclasses as dataclass
 import haversine
 import pandas as pd
 import staticmap
 from metro import *
 import os
-from typing import Optional, Tuple, List, Union, Dict
+from typing import Optional, Union, Dict
 
 CityGraph = networkx.Graph
 OsmnxGraph = networkx.MultiDiGraph
-
 
 def get_osmnx_graph() -> OsmnxGraph:
     return ox.graph_from_place("Barcelona, Spain", network_type = "walk")
@@ -38,7 +38,7 @@ class St_node:
     def __hash__(self):
         return hash(self.id)
 
-St_nodes = List[St_node]
+St_nodes = list[St_node]
 
 def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
 
@@ -74,7 +74,7 @@ Coord = (float, float)   # (latitude, longitude)
 
 
 Node = Union[Access, Station]
-Path = List[Node]
+Path = list[Node]
 
 
 def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
