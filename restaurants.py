@@ -1,7 +1,7 @@
 import pandas as pd
 import fuzzysearch
 from dataclasses import *
-from typing import Optional
+from typing import Optional, List
 import sys
 
 @dataclass
@@ -57,7 +57,7 @@ class Restaurant:
                 return True
         return False
 
-Restaurants = list[Restaurant]
+Restaurants = List[Restaurant]
 
 def read() -> Restaurants:
     """

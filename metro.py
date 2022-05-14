@@ -2,11 +2,11 @@ import networkx as nx
 import staticmap
 import pandas as pd
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Tuple, List
 import matplotlib.pyplot as plt
 import sys
 
-Position = tuple[float,float]
+Position = Tuple[float,float]
 
 @dataclass
 class Station:
@@ -71,7 +71,7 @@ def get_metro_graph() -> MetroGraph:
         metro_graph.add_edge(stations_dict[a.name_station], a, type = "acces", distance = distance(a,stations_dict[a.name_station]))
     return metro_graph
 
-Stations = list[Station]
+Stations = List[Station]
 
 
 def read_stations() -> Stations:
@@ -94,7 +94,7 @@ def read_stations() -> Stations:
     except:
         sys.exit("Something went wrong when trying to get the database from https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/estacions.csv, please check your internet connection")
 
-Accesses = list[Access]
+Accesses = List[Access]
 
 def read_accesses() -> Accesses:
     """

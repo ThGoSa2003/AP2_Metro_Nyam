@@ -3,6 +3,7 @@ from city import St_node
 import city
 from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext.filters import Filters
+from typing import List
 
 
 
@@ -10,13 +11,15 @@ class Bot:
     st_graph: city.OsmnxGraph
     city_graph: city.CityGraph
     restaurants: restaurants.Restaurants
-    coord = list[int,int] # (latitude, longitude)
+    restaurants_of_the_search: restaurants.Restaurants
+    coord = List[int] # (latitude, longitude)
 
 
     def __init__(self) -> None:
         self.st_graph = city.load_osmnx_graph("graph")
         self.city_graph = city.load_city_graph("graph", "city_graph")
         self.restaurants = restaurants.read()
+        self.restaurants_of_the_search = []
         self.coord = [0,0]
 
     def help(self, update, context) -> None:
@@ -53,26 +56,36 @@ class Bot:
 
     def find(self, update, context):
         query = str(context.args[0])
-        self.restaurants_of_the_search = find(query, all_restaurants)
+        self.restaurants_of_the_search = restaurants.find(query, self.restaurants)
+        txt = ""
         for i in range(len(self.restaurants_of_the_search)):
-            print(i, self.restaurants_of_the_search[i].name)
+            txt += str(i) + " " + str(self.restaurants_of_the_search[i].name) + "\n"
+        context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=txt)
 
     def info(self, update, context):
         numero = int(context.args[0])
         print("Informació de", self.restaurants_of_the_search[numero])
+        txt = ""
         for attribute, value in vars(self.restaurants_of_the_search[numero]).items():
-            print(attribute, value)
+            txt += str(attribute) + ": " + str(value) + "\n"
+        context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=txt)
 
     def guide(self, update, context):
         numero = int(context.args[0])
-        plot_path(self.city_graph, find_path(self.st_graph,
-            self.city_graph, update.message.location,
-            self.restaurants_of_the_search[numero].pos),
+        restaurant = self.restaurants_of_the_search[numero]
+        restaurant_pos = (restaurant.geo_epgs_25831_x, restaurant.geo_epgs_25831_y)
+        city.plot_path(self.city_graph, city.find_path(self.st_graph,
+            self.city_graph, self.coord,
+            restaurant_pos),
             "path")
         context.bot.send_photo(
             chat_id=update.effective_chat.id,
             photo=open("path.png", 'rb'))
-        os.remove("path_bot.png")
+        os.remove("path.png")
 
 
 

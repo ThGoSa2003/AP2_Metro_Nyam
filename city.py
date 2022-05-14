@@ -6,7 +6,7 @@ import pandas as pd
 import staticmap
 from metro import *
 import os
-from typing import Optional, Union, Dict
+from typing import Optional, Union, Dict, List
 
 CityGraph = networkx.Graph
 OsmnxGraph = networkx.MultiDiGraph
@@ -38,7 +38,7 @@ class St_node:
     def __hash__(self):
         return hash(self.id)
 
-St_nodes = list[St_node]
+St_nodes = List[St_node]
 
 def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
 
@@ -70,11 +70,11 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
     return city_graph
 
 
-Coord = (float, float)   # (latitude, longitude)
+Coord = Tuple[float, float]   # (latitude, longitude)
 
 
 Node = Union[Access, Station]
-Path = list[Node]
+Path = List[Node]
 
 
 def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
@@ -106,6 +106,7 @@ def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
                 dst_node = node
         else:
             break
+    print("hola")
 
     return networkx.shortest_path(g, src_node, dst_node, weight = w)
 
@@ -136,7 +137,7 @@ def plot(g: CityGraph, filename: str) -> None:
     image.save(filename + ".png")
 
 def plot_path(g: CityGraph, p: Path, filename: str) -> None:
-    map = staticmap.StaticMap(8000, 8000)
+    map = staticmap.StaticMap(1980, 1080)
     for i in range(len(p) - 1):
         if type(p[i]) == Station and type(p[i+1]) == Station:
             map.add_line(staticmap.Line((p[i].pos,p[i + 1].pos), 'red', 3))
@@ -147,7 +148,6 @@ def plot_path(g: CityGraph, p: Path, filename: str) -> None:
             map.add_marker(staticmap.CircleMarker(node.pos, "red", 10))
         else:
             map.add_marker(staticmap.CircleMarker(node.pos, "black", 10))
-
     image = map.render()
     image.save(filename + ".png")
 """
