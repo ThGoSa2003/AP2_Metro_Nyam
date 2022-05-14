@@ -61,7 +61,8 @@ Restaurants = List[Restaurant]
 
 def read() -> Restaurants:
     """
-    This function will read from resturants csv into a list of restaurants.
+    Returns a list of restaurants read from this csv file:
+    https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/restaurants.csv
     """
     try:
         csv_restaurants = pd.read_csv('https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/restaurants.csv')

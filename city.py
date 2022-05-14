@@ -73,7 +73,7 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
 Coord = Tuple[float, float]   # (latitude, longitude)
 
 
-Node = Union[Access, Station]
+Node = Union[Access, Station, St_node]
 Path = List[Node]
 
 

@@ -5,8 +5,6 @@ from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext.filters import Filters
 from typing import List
 
-
-
 class Bot:
     st_graph: city.OsmnxGraph
     city_graph: city.CityGraph
