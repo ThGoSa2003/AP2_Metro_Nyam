@@ -1,7 +1,8 @@
 import pandas as pd
 import fuzzysearch
 from dataclasses import *
-from typing import Optional, List
+from typing import Optional
+import sys
 
 @dataclass
 class Restaurant:
@@ -56,19 +57,21 @@ class Restaurant:
                 return True
         return False
 
-Restaurants = List[Restaurant]
-
+Restaurants = list[Restaurant]
 
 def read() -> Restaurants:
     """
     This function will read from resturants csv into a list of restaurants.
     """
-    csv_restaurants = pd.read_csv('https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/restaurants.csv')
-    dim = csv_restaurants.shape
-    restaurants = []
-    for i in range(dim[0]):
-        restaurants.append(Restaurant(*[j for j in csv_restaurants.iloc[i,:]]))
-    return restaurants
+    try:
+        csv_restaurants = pd.read_csv('https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/restaurants.csv')
+        dim = csv_restaurants.shape
+        restaurants = []
+        for i in range(dim[0]):
+            restaurants.append(Restaurant(*[j for j in csv_restaurants.iloc[i,:]]))
+        return restaurants
+    except:
+        sys.exit("Something went wrong when trying to get the database from the internet, please check your internet connection")
 
 def find(query: str, restaurants: Restaurants) -> Restaurants:
     """
