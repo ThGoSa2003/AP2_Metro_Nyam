@@ -23,17 +23,23 @@ class Bot:
     def help(self, update, context) -> None:
         context.bot.send_message(
         chat_id = update.effective_chat.id,
-        text = " Per obtenir els resultats més acurats sobre les rutes que tens que navegar agafem la teva geolocalització de forma automatica, pero si vols la pots actualitzar amb la comanda /locationLes comandes que pots utilitzar són les següents:\n\
-        /author: mostra el nom dels autors del programa.\n\
+        text = "Per obtenir els resultats més acurats sobre les rutes que has \
+        de navegar agafem la teva geolocalització de forma automàtica, però si \
+        vols la pots actualitzar amb la comanda /location. Les comandes que pots \
+        utilitzar són les següents:\n\n\
+        /author: mostra el nom dels autors del programa.\n\n\
         /find <query>: Cerca quins restaurants satisfan la cerca i n'escriu una \
-        llista numerada (12 elements com a molt). Per exemple: /find pizza. \n\
+        llista numerada (12 elements com a molt). Per exemple: /find pizza. \n\n\
         /info <numero>: mostra la informació sobre el restaurant especificat pel \
-        seu número (triat de la darrera llista numerada obtinguda amb /find).\n\
+        seu número (triat de la darrera llista numerada obtinguda amb /find).\n\n\
         /guide <numero>: mostra un mapa amb el camí més curt per anar del punt \
         actual on es troba l'usuari al restaurant especificat pel seu número \
-        (triat de la darrera llista numerada obtinguda amb /find).")
+        (triat de la darrera llista numerada obtinguda amb /find).\n\n\
+        /get_location: escriu les coordenades de la ubicació des de la qual es\
+        traçaran les rutes.")
 
     def start(self, update, context) -> None:
+        """Escriu el missatge inicial del bot."""
         context.bot.send_message(
             chat_id = update.effective_chat.id,
             text = "Hola! Soc un bot per trobar la ruta més ràpida al restaurant que vulguis de Barcelona. Fes servir /help per obtenir informació sobre les comandes que puc executar, i activa l'opció de compartir la localització amb el bot per tal de poder començar aquesta aventura")
@@ -43,16 +49,26 @@ class Bot:
         self.coord[1] = update.edited_message['location']['longitude']
 
     def get_location(self, update, context) -> None:
+        """
+        Escriu les coordenades de la ubicació des de la qual es traçaran les rutes.
+        """
         context.bot.send_message(
             chat_id = update.effective_chat.id,
             text = "La teva localització actual és (" + str(self.coord[0]) + "," + str(self.coord[1]) + ")")
 
     def author(self, update, context):
+        """
+        Escriu qui ha fet el programa.
+        """
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text="Aquest programa està fet per Oriol López Petit i Thomas González Saito.")
 
     def find(self, update, context):
+        """
+        Donada una paraula per filtrar, escriu tots els restaurants de Barcelona
+        amb la paraula a algun camp seu (nom, descripció, ubicació etc.)
+        """
         query = str(context.args[0])
         self.restaurants_of_the_search = restaurants.find(query, self.restaurants)
         txt = ""
@@ -63,6 +79,10 @@ class Bot:
             text=txt)
 
     def info(self, update, context):
+        """
+        Donat el número del restaurant a la llista de la última cerca,
+        escriu tota la seva informació.
+        """
         numero = int(context.args[0])
         print("Informació de", self.restaurants_of_the_search[numero])
         txt = ""
@@ -73,6 +93,10 @@ class Bot:
             text=txt)
 
     def guide(self, update, context):
+        """
+        Donat el número del restaurant a la llista de la última cerca,
+        mostra a pantalla un mapa de com arribar-hi.
+        """
         numero = int(context.args[0])
         restaurant = self.restaurants_of_the_search[numero]
         restaurant_pos = (restaurant.geo_epgs_25831_x, restaurant.geo_epgs_25831_y)
@@ -88,7 +112,10 @@ class Bot:
 
 
 def main():
-
+    """
+    Crea un bot de telegram que permet trobar i arribar a restaurants
+    de Barcelona.
+    """
     token = ""
     try:
         token = open('token.txt').read().strip()
