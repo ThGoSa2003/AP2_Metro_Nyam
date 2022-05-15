@@ -4,6 +4,7 @@ import city
 from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext.filters import Filters
 from typing import List
+import os
 
 class Bot:
     st_graph: city.OsmnxGraph
@@ -45,8 +46,8 @@ class Bot:
             text = "Hola! Soc un bot per trobar la ruta més ràpida al restaurant que vulguis de Barcelona. Fes servir /help per obtenir informació sobre les comandes que puc executar, i activa l'opció de compartir la localització amb el bot per tal de poder començar aquesta aventura")
 
     def update_location(self,update,context) -> None:
-        self.coord[0] = update.edited_message['location']['latitude']
-        self.coord[1] = update.edited_message['location']['longitude']
+        self.coord[0] = update.edited_message['location']['longitude']
+        self.coord[1] = update.edited_message['location']['latitude']
 
     def get_location(self, update, context) -> None:
         """

@@ -2,7 +2,7 @@ import networkx as nx
 import staticmap
 import pandas as pd
 from dataclasses import dataclass
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, List, Union
 import matplotlib.pyplot as plt
 import sys
 
@@ -41,7 +41,7 @@ class Access:
         return hash(self.id)
 
 
-def distance(node1: Union[Station, Access, St_node, None], node2: Union[Station, Access, St_node, None]) -> float:
+def distance(node1: Union[Station, Access, None], node2: Union[Station, Access, None]) -> float:
     """
     This function will return the euclidean distance from any two nodes that have the pos property.
     """

@@ -106,7 +106,6 @@ def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
                 dst_node = node
         else:
             break
-    print("hola")
 
     return networkx.shortest_path(g, src_node, dst_node, weight = w)
 
