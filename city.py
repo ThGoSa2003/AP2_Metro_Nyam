@@ -94,7 +94,7 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
     return city_graph
 
 
-Coord = (float, float)   # (latitude, longitude)
+Coord = Tuple[float, float]   # (latitude, longitude)
 
 
 Node = Union[Access, Station]
@@ -172,7 +172,6 @@ def plot_path(g: CityGraph, p: Path, filename: str) -> None:
             map.add_marker(staticmap.CircleMarker(node.pos, "red", 10))
         else:
             map.add_marker(staticmap.CircleMarker(node.pos, "black", 10))
-
     image = map.render()
     image.save(filename + ".png")
 

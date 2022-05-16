@@ -6,11 +6,16 @@ import matplotlib.pyplot as plt
 from dataclasses import dataclass
 from typing_extensions import TypeAlias
 from typing import Optional
+from typing import Optional, Tuple, List, Union
+import matplotlib.pyplot as plt
+import sys
+
 
 Position : TypeAlias = tuple[float,float]
 
 @dataclass
 class Station:
+    """Implementation of the Station class."""
     id: int
     name: str
     order: int
@@ -18,10 +23,15 @@ class Station:
     pos: Position
 
     def __hash__(self) -> int:
+        """
+        Returns the hash of a Station. Needed to make them nodes of
+        a networkx graph.
+        """
         return hash(self.id)
 
 @dataclass
 class Access:
+    """Implementation of the Access class."""
     id: int
     name: str
     accessibility: bool
@@ -29,17 +39,21 @@ class Access:
     pos: Position
 
     def __hash__(self) -> int:
+        """
+        Returns the hash of an Access. Needed to make them nodes of
+        a networkx graph.
+        """
         return hash(self.id)
 
 
-def distance(station1: Optional[Station], station2: Optional[Station]) -> float:
+def distance(node1: Union[Station, Access, None], node2: Union[Station, Access, None]) -> float:
     """
     :param station1, station2:
     This function will return the euclidean distance from any two nodes that have the pos property.
     """
 
     try:
-        return ((station1.pos[0] - station2.pos[0])**2 + (station1.pos[1] - station2.pos[1])**2)**1/2
+        return ((node1.pos[0] - node2.pos[0])**2 + (node1.pos[1] - node2.pos[1])**2)**1/2
     except AttributeError:
         raise AttributeError("You tried to get the distance of a class that has no attribute pos")
         sys.exit()

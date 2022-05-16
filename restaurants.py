@@ -4,6 +4,8 @@ import pandas as pd
 from dataclasses import *
 from typing import Optional
 from typing_extensions import TypeAlias
+from typing import Optional, List
+import sys
 
 
 @dataclass
