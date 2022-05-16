@@ -5,17 +5,16 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
 from typing_extensions import TypeAlias
-from typing import Optional
 from typing import Optional, Tuple, List, Union
-import matplotlib.pyplot as plt
-import sys
-
 
 Position : TypeAlias = tuple[float,float]
 
 @dataclass
 class Station:
-    """Implementation of the Station class."""
+    """
+    This class represents a station within the metro of a city
+    """
+
     id: int
     name: str
     order: int
@@ -23,15 +22,14 @@ class Station:
     pos: Position
 
     def __hash__(self) -> int:
-        """
-        Returns the hash of a Station. Needed to make them nodes of
-        a networkx graph.
-        """
         return hash(self.id)
 
 @dataclass
 class Access:
-    """Implementation of the Access class."""
+    """
+    This class represents an access point to the metro of a city
+    """
+
     id: int
     name: str
     accessibility: bool
@@ -39,17 +37,13 @@ class Access:
     pos: Position
 
     def __hash__(self) -> int:
-        """
-        Returns the hash of an Access. Needed to make them nodes of
-        a networkx graph.
-        """
         return hash(self.id)
 
 
 def distance(node1: Union[Station, Access, None], node2: Union[Station, Access, None]) -> float:
     """
-    :param station1, station2:
-    This function will return the euclidean distance from any two nodes that have the pos property.
+    :param node1, node2: any class with attribute pos (latitude and longitude)
+    :returns: the euclidean distance between node1 node2
     """
 
     try:
@@ -62,7 +56,7 @@ MetroGraph = nx.Graph
 
 def get_metro_graph() -> MetroGraph:
     """
-    This function will return a Graph of the metro of barcelona.
+    :returns: A graph of the metro of the city
     """
 
     stations = read_stations()
@@ -92,11 +86,11 @@ Stations : TypeAlias = list[Station]
 
 def read_stations() -> Stations:
     """
-    This function will return a list of all the sataions in Barcelona
+    :returns: the list of stations in the city
     """
 
     try:
-        csv_stations = pd.read_csv('https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/estacions.csv')
+        csv_stations = pd.read_csv('./data/estacions.csv')
         dim = csv_stations.shape
         stations = []
         for i in range(dim[0]):
@@ -108,17 +102,17 @@ def read_stations() -> Stations:
             stations.append(Station(id,name,order,line,pos))
         return stations
     except:
-        sys.exit("Something went wrong when trying to get the database from https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/estacions.csv, please check your internet connection")
+        sys.exit("We cannot find data/estacions.csv, please add it in")
 
 Accesses : TypeAlias = list[Access]
 
 def read_accesses() -> Accesses:
     """
-    This function will return a list of all the accesses in Barcelona
+    :returns: a list of the accesses in the city
     """
 
     try:
-        csv_accesses = pd.read_csv('https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/accessos.csv')
+        csv_accesses = pd.read_csv('./data/accessos.csv')
         dim = csv_accesses.shape
         accesses = []
         for i in range(dim[0]):
@@ -130,11 +124,12 @@ def read_accesses() -> Accesses:
             accesses.append(Access(ides, name,accessibility,name_station,pos))
         return accesses
     except:
-        sys.exit("Something went wrong when trying to get the database from https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/accessos.csv, please check your internet connection")
+        sys.exit("We cannot find data/accessos.csv, please add it in")
 
 def show(g: MetroGraph) -> None:
     """
-    This action will plot a metro graph in a matplot frame
+    :param g: a graph of the metro of the city
+    :effect: a plot of the graph of the metro of the city will appear
     """
 
     positions = {}
@@ -145,7 +140,9 @@ def show(g: MetroGraph) -> None:
 
 def plot(g: MetroGraph, filename: str) -> None:
     """
-    This action will leave in a png image of name filename of the graph of a metro graph
+    :param g: a graph of the metro of the city
+    :param filename: a path and name to save the image
+    :effect: an image of g will be saved in filename  
     """
 
     map = staticmap.StaticMap(1980, 1080)
@@ -154,4 +151,4 @@ def plot(g: MetroGraph, filename: str) -> None:
     for edge in g.edges:
         map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], "blue", 5))
     image = map.render()
-    image.save(filename + ".png")
+    image.save(filename)

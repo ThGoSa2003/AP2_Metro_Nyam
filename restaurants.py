@@ -12,6 +12,8 @@ import sys
 class Restaurant:
     """
     This class represents a restaurant of the city of Barcelona
+
+    All the atributes from the csv will be added to this class
     """
 
     register_id: int
@@ -79,7 +81,7 @@ def read() -> Restaurants:
             restaurants.append(Restaurant(*[j for j in csv_restaurants.iloc[i, :]]))
         return restaurants
     except:
-        sys.exit("I cannot find the restaurants.csv in the data file, please add it in it")
+        sys.exit("I cannot find the data/restaurants.csv, please add it in it")
 
 
 def find(query: str, restaurants: Restaurants) -> Restaurants:

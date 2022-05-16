@@ -3,13 +3,23 @@ import osmnx as ox
 import haversine
 import pandas as pd
 import staticmap
-from metro import *
+from metro import Position, get_metro_graph, MetroGraph, Access, Station
 import os
 from typing import Optional, Tuple, List, Union, Dict
+from dataclasses import dataclass
 
-CityGraph = networkx.Graph
-OsmnxGraph = networkx.MultiDiGraph
+from typing_extensions import TypeAlias
 
+@dataclass
+class St_node:
+    id: int
+    pos: Position
+
+    def __hash__(self):
+        return hash(self.id)
+
+CityGraph : TypeAlias = networkx.Graph
+OsmnxGraph : TypeAlias = networkx.MultiDiGraph
 
 def get_osmnx_graph() -> OsmnxGraph:
     """
@@ -22,7 +32,7 @@ def save_osmnx_graph(g: OsmnxGraph, filename: str) -> None:
     """
     :param g: a graph that you want to save in a file
     :param filename: the path and name of the file you want to store the graph in
-    :effect: g will be stored in filename with extension gpickle
+    :effect: g must be stored in filename with extension gpickle
     """
 
     networkx.write_gpickle(g, path = filename)
@@ -41,7 +51,7 @@ def save_city_graph(g: CityGraph, filename: str) -> None:
     """
     might get rid of this one
     """
-    networkx.write_gpickle(g, path = filename + ".gpickle")
+    networkx.write_gpickle(g, path = filename)
 
 def load_city_graph(filename_osmnx: str, filename_city: str) -> CityGraph:
     """
@@ -54,24 +64,20 @@ def load_city_graph(filename_osmnx: str, filename_city: str) -> CityGraph:
         save_city_graph(build_city_graph(load_osmnx_graph(filename_osmnx),get_metro_graph()),filename_city)
     return networkx.read_gpickle(filename_city)
 
-@dataclass
-class St_node:
-    id: int
-    pos: Position
-
-    def __hash__(self):
-        return hash(self.id)
-
-St_nodes = List[St_node]
 
 def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
+    """
+    :param g1: a graph of the streets of a city
+    :param g2: a graph of the metro of a city
+    :returns: a union of g1 and g2 that joins some of the accesses and street nodes
+    """
 
     city_graph = networkx.Graph()
     metro_nodes = [node for node in g2.nodes]
 
     st_nodes_dict = {k : St_node(k, (v['x'], v['y'])) for k, v in g1.nodes.data()}
     st_nodes = [St_node(k, (v['x'], v['y'])) for k, v in g1.nodes.data()]
-    st_nodes.sort(key = lambda s : (s.id))
+    st_nodes.sort(key = lambda s : (s.id)) # try without this
     city_graph.add_nodes_from(st_nodes)
 
     for edge_n_atribiute in g1.edges.data():
@@ -94,11 +100,11 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
     return city_graph
 
 
-Coord = Tuple[float, float]   # (latitude, longitude)
+Coord : TypeAlias = Tuple[float, float]   # (latitude, longitude)
 
 
-Node = Union[Access, Station]
-Path = List[Node]
+Node : TypeAlias = Union[Access, Station]
+Path : TypeAlias = List[Node]
 
 
 def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
@@ -120,7 +126,6 @@ def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
 
     src_node = ox.distance.nearest_nodes(ox_g,src[0],src[1])
     dst_node = ox.distance.nearest_nodes(ox_g,dst[0],dst[1])
-    print(src_node, dst_node)
     for node in g.nodes:
         if type(src_node) == int or type(dst_node) == int:
             if src_node == node.id:
