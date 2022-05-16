@@ -1,34 +1,58 @@
 import networkx
 import osmnx as ox
-import dataclasses as dataclass
 import haversine
 import pandas as pd
 import staticmap
 from metro import *
 import os
-from typing import Optional, Union, Dict
+from typing import Optional, Tuple, List, Union, Dict
 
 CityGraph = networkx.Graph
 OsmnxGraph = networkx.MultiDiGraph
 
+
 def get_osmnx_graph() -> OsmnxGraph:
+    """
+    :returns: a networkx graph of the city of Barcelona
+    """
+
     return ox.graph_from_place("Barcelona, Spain", network_type = "walk")
 
 def save_osmnx_graph(g: OsmnxGraph, filename: str) -> None:
-    networkx.write_gpickle(g, path=filename+".gpickle")
+    """
+    :param g: a graph that you want to save in a file
+    :param filename: the path and name of the file you want to store the graph in
+    :effect: g will be stored in filename with extension gpickle
+    """
+
+    networkx.write_gpickle(g, path = filename)
 
 def load_osmnx_graph(filename: str) -> OsmnxGraph:
-    if not os.path.exists(filename + ".gpickle"):
+    """
+    :param filename: the path of a graph that you want to load (must be .gpickle)
+    :returns: the graph in filename
+    """
+
+    if not os.path.exists(filename):
         save_osmnx_graph(get_osmnx_graph(),filename)
-    return networkx.read_gpickle(filename + ".gpickle")
+    return networkx.read_gpickle(filename)
 
 def save_city_graph(g: CityGraph, filename: str) -> None:
-    networkx.write_gpickle(g, path=filename+".gpickle")
+    """
+    might get rid of this one
+    """
+    networkx.write_gpickle(g, path = filename + ".gpickle")
 
 def load_city_graph(filename_osmnx: str, filename_city: str) -> CityGraph:
-    if not os.path.exists(filename_city + ".gpickle"):
+    """
+    :param filename_osmnx: a path to a graph of the streets of the city
+    :param filename_city: a path to a complete graph of the city
+    :returns: a graph of the city
+    """
+
+    if not os.path.exists(filename_city):
         save_city_graph(build_city_graph(load_osmnx_graph(filename_osmnx),get_metro_graph()),filename_city)
-    return networkx.read_gpickle(filename_city + ".gpickle")
+    return networkx.read_gpickle(filename_city)
 
 @dataclass
 class St_node:
@@ -38,7 +62,7 @@ class St_node:
     def __hash__(self):
         return hash(self.id)
 
-St_nodes = list[St_node]
+St_nodes = List[St_node]
 
 def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
 
@@ -74,7 +98,7 @@ Coord = (float, float)   # (latitude, longitude)
 
 
 Node = Union[Access, Station]
-Path = list[Node]
+Path = List[Node]
 
 
 def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
@@ -97,7 +121,6 @@ def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
     src_node = ox.distance.nearest_nodes(ox_g,src[0],src[1])
     dst_node = ox.distance.nearest_nodes(ox_g,dst[0],dst[1])
     print(src_node, dst_node)
-    # Hi ha nodes dolents.
     for node in g.nodes:
         if type(src_node) == int or type(dst_node) == int:
             if src_node == node.id:
@@ -136,12 +159,14 @@ def plot(g: CityGraph, filename: str) -> None:
     image.save(filename + ".png")
 
 def plot_path(g: CityGraph, p: Path, filename: str) -> None:
-    map = staticmap.StaticMap(8000, 8000)
+
+    map = staticmap.StaticMap(1980, 1080)
     for i in range(len(p) - 1):
         if type(p[i]) == Station and type(p[i+1]) == Station:
             map.add_line(staticmap.Line((p[i].pos,p[i + 1].pos), 'red', 3))
         else:
             map.add_line(staticmap.Line((p[i].pos,p[i + 1].pos), 'black', 3))
+
     for node in p:
         if type(node) == Station:
             map.add_marker(staticmap.CircleMarker(node.pos, "red", 10))
@@ -150,10 +175,8 @@ def plot_path(g: CityGraph, p: Path, filename: str) -> None:
 
     image = map.render()
     image.save(filename + ".png")
-"""
-c_t = load_city_graph("./graph","./city_graph")
-o_g = load_osmnx_graph("./graph")
-plot(c_t,"./city_image")
-"""
-#plot_path(c_t, find_path(o_g,c_t,(2.0713,41.2877),(2.1986,41.4592)),"./city_image") # there is a bug here for some reason
+
+c_t = load_city_graph("./graph.gpickle","./city_graph.gpickle")
+o_g = load_osmnx_graph("./graph.gpickle")
+plot_path(c_t, find_path(o_g,c_t,(2.0713,41.2877),(2.1986,41.4592)),"./Cit") # there is a bug here for some reason
 # some nodes from osmnx have not been added, must fix build_city_graph

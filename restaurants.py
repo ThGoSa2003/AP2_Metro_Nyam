@@ -1,14 +1,17 @@
-import pandas as pd
 import fuzzysearch
+import sys
+import pandas as pd
 from dataclasses import *
 from typing import Optional
-import sys
+from typing_extensions import TypeAlias
+
 
 @dataclass
 class Restaurant:
     """
-    Implementation of the Restaurant class.
+    This class represents a restaurant of the city of Barcelona
     """
+
     register_id: int
     name: str
     institution_id: Optional[int]
@@ -48,8 +51,8 @@ class Restaurant:
 
     def contains(self, query: str) -> bool:
         """
-        Returns whether the restaurant contains a given word "query" in any
-        of its attributes.
+        :param query: a word that you want to serch in the restaurants
+        :returns: whether if query is in any of the attributes
         """
 
         for attribute, value in vars(self).items():
@@ -57,26 +60,31 @@ class Restaurant:
                 return True
         return False
 
-Restaurants = list[Restaurant]
+
+Restaurants: TypeAlias = list[Restaurant]
+
 
 def read() -> Restaurants:
     """
-    This function will read from resturants csv into a list of restaurants.
+    :returns: a list of the restaurants of Barcelona
     """
+
     try:
-        csv_restaurants = pd.read_csv('https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/restaurants.csv')
+        csv_restaurants = pd.read_csv('./data/restaurants.csv')
         dim = csv_restaurants.shape
         restaurants = []
         for i in range(dim[0]):
-            restaurants.append(Restaurant(*[j for j in csv_restaurants.iloc[i,:]]))
+            restaurants.append(Restaurant(*[j for j in csv_restaurants.iloc[i, :]]))
         return restaurants
     except:
-        sys.exit("Something went wrong when trying to get the database from the internet, please check your internet connection")
+        sys.exit("I cannot find the restaurants.csv in the data file, please add it in it")
+
 
 def find(query: str, restaurants: Restaurants) -> Restaurants:
     """
-    Given a word "query", return the list of restaurants with that word in
-    any of its attributes.
+    :param restaurants: a list of restaurants
+    :param query: a word you want to serch for in the restaurants
+    :returns: a list of the restaurants that contain query in any field
     """
 
     return [restaurant for restaurant in restaurants if restaurant.contains(query)]

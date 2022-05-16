@@ -1,12 +1,13 @@
-import networkx as nx
 import staticmap
-import pandas as pd
-from dataclasses import dataclass
-from typing import Optional
-import matplotlib.pyplot as plt
 import sys
+import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+from dataclasses import dataclass
+from typing_extensions import TypeAlias
+from typing import Optional
 
-Position = tuple[float,float]
+Position : TypeAlias = tuple[float,float]
 
 @dataclass
 class Station:
@@ -33,6 +34,7 @@ class Access:
 
 def distance(station1: Optional[Station], station2: Optional[Station]) -> float:
     """
+    :param station1, station2:
     This function will return the euclidean distance from any two nodes that have the pos property.
     """
 
@@ -71,7 +73,7 @@ def get_metro_graph() -> MetroGraph:
         metro_graph.add_edge(stations_dict[a.name_station], a, type = "acces", distance = distance(a,stations_dict[a.name_station]))
     return metro_graph
 
-Stations = list[Station]
+Stations : TypeAlias = list[Station]
 
 
 def read_stations() -> Stations:
@@ -94,7 +96,7 @@ def read_stations() -> Stations:
     except:
         sys.exit("Something went wrong when trying to get the database from https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/estacions.csv, please check your internet connection")
 
-Accesses = list[Access]
+Accesses : TypeAlias = list[Access]
 
 def read_accesses() -> Accesses:
     """

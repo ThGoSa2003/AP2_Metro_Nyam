@@ -14,8 +14,8 @@ class Bot:
 
 
     def __init__(self) -> None:
-        self.st_graph = city.load_osmnx_graph("graph")
-        self.city_graph = city.load_city_graph("graph", "city_graph")
+        self.st_graph = city.load_osmnx_graph("graph.gpickle")
+        self.city_graph = city.load_city_graph("graph.gpickle", "city_graph.gpickle")
         self.restaurants = restaurants.read()
         self.coord = [0,0]
 
