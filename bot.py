@@ -3,23 +3,30 @@ from city import St_node
 import city
 from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext.filters import Filters
-from typing import List
+from typing import List, Dict
 import os
+"""
+def ExceptionHandler(func):
+    try:
+        ...
+    except:
+        ...
+"""
 
 class Bot:
     st_graph: city.OsmnxGraph
     city_graph: city.CityGraph
     restaurants: restaurants.Restaurants
-    restaurants_of_the_search: restaurants.Restaurants
-    coord = List[int] # (latitude, longitude)
+    restaurants_of_the_search: Dict[int: restaurants.Restaurants]
+    coord = Dict[List[int]] # (latitude, longitude)
 
-
+    #@ExceptionHandler
     def __init__(self) -> None:
         self.st_graph = city.load_osmnx_graph("graph.gpickle")
         self.city_graph = city.load_city_graph("graph.gpickle", "city_graph.gpickle")
         self.restaurants = restaurants.read()
-        self.restaurants_of_the_search = []
-        self.coord = [0,0]
+        self.restaurants_of_the_search = {}
+        self.coord = {}
 
     def help(self, update, context) -> None:
         context.bot.send_message(
@@ -41,21 +48,33 @@ class Bot:
 
     def start(self, update, context) -> None:
         """Escriu el missatge inicial del bot."""
+        self.restaurants_of_the_search[update.message.from_user.id] = []
+        self.coord[update.message.from_user.id] = [0, 0]
         context.bot.send_message(
             chat_id = update.effective_chat.id,
-            text = "Hola! Soc un bot per trobar la ruta més ràpida al restaurant que vulguis de Barcelona. Fes servir /help per obtenir informació sobre les comandes que puc executar, i activa l'opció de compartir la localització amb el bot per tal de poder començar aquesta aventura")
+            text = "Hola! Soc un bot per trobar la ruta més ràpida al \
+                    restaurant que vulguis de Barcelona. Fes servir /help \
+                    per obtenir informació sobre les comandes que puc executar,\
+                     i activa l'opció de compartir la localització amb el bot \
+                     per tal de poder començar aquesta aventura")
 
     def update_location(self,update,context) -> None:
-        self.coord[0] = update.edited_message['location']['longitude']
-        self.coord[1] = update.edited_message['location']['latitude']
+        self.coord[update.message.from_user.id][0] = update.edited_message['location']['longitude']
+        self.coord[update.message.from_user.id][1] = update.edited_message['location']['latitude']
 
     def get_location(self, update, context) -> None:
         """
         Escriu les coordenades de la ubicació des de la qual es traçaran les rutes.
         """
-        context.bot.send_message(
-            chat_id = update.effective_chat.id,
-            text = "La teva localització actual és (" + str(self.coord[0]) + "," + str(self.coord[1]) + ")")
+        if self.coord[update.message.from_user.id] == [0, 0]:
+            context.bot.send_message(
+                chat_id = update.effective_chat.id,
+                text = "No tenim la teva ubicació. Envia-la. Si ja l'has enviat\
+                         pot tardar una estona en carregar.")
+        else:
+            context.bot.send_message(
+                chat_id = update.effective_chat.id,
+                text = "La teva localització actual és (" + str(self.coord[update.message.from_user.id][0]) + "," + str(self.coord[update.message.from_user.id][1]) + ")")
 
     def author(self, update, context):
         """
@@ -71,10 +90,10 @@ class Bot:
         amb la paraula a algun camp seu (nom, descripció, ubicació etc.)
         """
         query = str(context.args[0])
-        self.restaurants_of_the_search = restaurants.find(query, self.restaurants)
+        self.restaurants_of_the_search[update.message.from_user.id] = restaurants.find(query, self.restaurants)
         txt = ""
-        for i in range(len(self.restaurants_of_the_search)):
-            txt += str(i) + " " + str(self.restaurants_of_the_search[i].name) + "\n"
+        for i in range(len(self.restaurants_of_the_search[update.message.from_user.id])):
+            txt += str(i) + " " + str(self.restaurants_of_the_search[update.message.from_user.id][i].name) + "\n"
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=txt)
@@ -85,9 +104,9 @@ class Bot:
         escriu tota la seva informació.
         """
         numero = int(context.args[0])
-        print("Informació de", self.restaurants_of_the_search[numero])
+        print("Informació de", self.restaurants_of_the_search[update.message.from_user.id][numero])
         txt = ""
-        for attribute, value in vars(self.restaurants_of_the_search[numero]).items():
+        for attribute, value in vars(self.restaurants_of_the_search[update.message.from_user.id][numero]).items():
             txt += str(attribute) + ": " + str(value) + "\n"
         context.bot.send_message(
             chat_id=update.effective_chat.id,
@@ -99,7 +118,7 @@ class Bot:
         mostra a pantalla un mapa de com arribar-hi.
         """
         numero = int(context.args[0])
-        restaurant = self.restaurants_of_the_search[numero]
+        restaurant = self.restaurants_of_the_search[update.message.from_user.id][numero]
         restaurant_pos = (restaurant.geo_epgs_25831_x, restaurant.geo_epgs_25831_y)
         city.plot_path(self.city_graph, city.find_path(self.st_graph,
             self.city_graph, self.coord,
@@ -107,8 +126,8 @@ class Bot:
             "path")
         context.bot.send_photo(
             chat_id=update.effective_chat.id,
-            photo=open("path.png", 'rb'))
-        os.remove("path.png")
+            photo=open("path" + str(update.message.from_user.id) + ".png", 'rb')) #id usuari
+        os.remove("path" + str(update.message.from_user.id) + ".png")
 
 
 
