@@ -142,7 +142,7 @@ def plot(g: MetroGraph, filename: str) -> None:
     """
     :param g: a graph of the metro of the city
     :param filename: a path and name to save the image
-    :effect: an image of g will be saved in filename  
+    :effect: an image of g will be saved in filename
     """
 
     map = staticmap.StaticMap(1980, 1080)

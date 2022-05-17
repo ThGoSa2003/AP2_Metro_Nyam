@@ -1,17 +1,18 @@
+import os
 import restaurants
-from city import St_node
 import city
+from typing_extensions import TypeAlias
 from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext.filters import Filters
+from city import St_node
 from typing import List
-import os
 
 class Bot:
-    st_graph: city.OsmnxGraph
-    city_graph: city.CityGraph
-    restaurants: restaurants.Restaurants
-    restaurants_of_the_search: restaurants.Restaurants
-    coord = List[int] # (latitude, longitude)
+    st_graph: TypeAlias = city.OsmnxGraph
+    city_graph: TypeAlias = city.CityGraph
+    restaurants: TypeAlias = restaurants.Restaurants
+    restaurants_of_the_search: TypeAlias = restaurants.Restaurants
+    coord : TypeAlias = List[int, int] # (latitude, longitude)
 
 
     def __init__(self) -> None:

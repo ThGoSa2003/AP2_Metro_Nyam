@@ -7,8 +7,8 @@ from metro import Position, get_metro_graph, MetroGraph, Access, Station
 import os
 from typing import Optional, Tuple, List, Union, Dict
 from dataclasses import dataclass
-
 from typing_extensions import TypeAlias
+
 
 @dataclass
 class St_node:
@@ -146,6 +146,9 @@ def show(g: CityGraph) -> None:
 
 def plot(g: CityGraph, filename: str) -> None:
     map = staticmap.StaticMap(1980, 1080)
+
+    colours = {Access : "black", St_node: "brown", }
+
     for node in g.nodes:
         if type(node) == Station:
             map.add_marker(staticmap.CircleMarker(node.pos, "red", 1))
@@ -182,5 +185,6 @@ def plot_path(g: CityGraph, p: Path, filename: str) -> None:
 
 c_t = load_city_graph("./graph.gpickle","./city_graph.gpickle")
 o_g = load_osmnx_graph("./graph.gpickle")
-plot_path(c_t, find_path(o_g,c_t,(2.0713,41.2877),(2.1986,41.4592)),"./Cit") # there is a bug here for some reason
+plot(c_t,"./Cit" )
+#plot_path(c_t, find_path(o_g,c_t,(2.0713,41.2877),(2.1986,41.4592)),"./Cit") # there is a bug here for some reason
 # some nodes from osmnx have not been added, must fix build_city_graph
