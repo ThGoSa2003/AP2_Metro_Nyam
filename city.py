@@ -146,13 +146,26 @@ def show(g: CityGraph) -> None:
 
 def plot(g: CityGraph, filename: str) -> None:
     map = staticmap.StaticMap(1980, 1080)
+    line_colour = {
+        "L1": "red"
+        "L2": "darkviolet"
+        "L3": "green"
+        "L4": "gold"
+        "L5": "blue"
+        "L9N": "orangered"
+        "L9S": "orangered"
+        "L10N": "darkturquoise"
+        "L10S": "darkturquoise"
+        "L11": "greenyellow"
+        "FM": "forestgreen"
+    }
     for node in g.nodes:
         if type(node) == Station:
             map.add_marker(staticmap.CircleMarker(node.pos, "red", 1))
         if type(node) == Access:
             map.add_marker(staticmap.CircleMarker(node.pos, "black", 1))
         if type(node) == St_node:
-            map.add_marker(staticmap.CircleMarker(node.pos, "green", 1))
+            map.add_marker(staticmap.CircleMarker(node.pos, "brown", 1))
     for edge in g.edges.data():
         if edge[2]['type'] == 'walk':
             map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], "yellow", 0))
