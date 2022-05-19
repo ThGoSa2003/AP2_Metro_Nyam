@@ -75,6 +75,7 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
     :param g1: a graph of the streets of a city
     :param g2: a graph of the metro of a city
     :returns: a union of g1 and g2 that joins some of the accesses and street nodes
+    :warning: nodes are stored as hashable classes
     """
 
     city_graph = networkx.Graph()
@@ -186,7 +187,3 @@ def plot_path(g: CityGraph, p: Path, filename: str) -> None:
             map.add_marker(staticmap.CircleMarker(node.pos, constants.colour["other"], 10))
     image = map.render()
     image.save(filename)
-
-c_t = load_city_graph("./graph.gpickle","./city_graph.gpickle")
-o_g = load_osmnx_graph("./graph.gpickle")
-plot_path(c_t, find_path(o_g,c_t,(2.0713,41.0),(2.1986,41.4592)),"./path.png") # there is a bug here for some reason

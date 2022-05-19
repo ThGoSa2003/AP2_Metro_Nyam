@@ -57,6 +57,7 @@ MetroGraph = nx.Graph
 def get_metro_graph() -> MetroGraph:
     """
     :returns: A graph of the metro of the city
+    :warning: nodes are stored as hashable classes
     """
 
     stations = read_stations()
