@@ -7,8 +7,8 @@ from metro import Position, get_metro_graph, MetroGraph, Access, Station
 import os
 from typing import Optional, Tuple, List, Union, Dict
 from dataclasses import dataclass
-
 from typing_extensions import TypeAlias
+
 
 @dataclass
 class St_node:
@@ -145,56 +145,48 @@ def show(g: CityGraph) -> None:
     plt.show()
 
 def plot(g: CityGraph, filename: str) -> None:
-    map = staticmap.StaticMap(1980, 1080)
-    line_colour = {
-        "L1": "red",
-        "L2": "darkviolet",
-        "L3": "green",
-        "L4": "gold",
-        "L5": "blue",
-        "L9N": "orangered",
-        "L9S": "orangered",
-        "L10N": "darkturquoise",
-        "L10S": "darkturquoise",
-        "L11": "greenyellow",
-        "FM": "forestgreen"
-    }
+    """
+    :param g: a graph of the city
+    :param filename: a path to a file in the system
+    :effect: It will store an image of g in filename. For different types of nodes and edges
+    the colours will be different.
+    """
+
+    map = staticmap.StaticMap(3000, 3000)
+    colour = {Access : "black", St_node: "brown", "L1": "red","L2": "darkviolet","L3": "green","L4": "gold","L5": "blue","L9N": "orangered","L9S": "orangered","L10N": "darkturquoise","L10S": "darkturquoise","L11": "greenyellow","FM": "forestgreen"}
     for node in g.nodes:
         if type(node) == Station:
-            map.add_marker(staticmap.CircleMarker(node.pos, "red", 1))
-        if type(node) == Access:
-            map.add_marker(staticmap.CircleMarker(node.pos, "black", 1))
-        if type(node) == St_node:
-            map.add_marker(staticmap.CircleMarker(node.pos, "brown", 1))
-    for edge in g.edges.data():
-        if edge[2]['type'] == 'walk':
-            map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], "yellow", 0))
-        elif edge[2]['type'] == 'tram':
-            map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], "blue", 0))
+            map.add_marker(staticmap.CircleMarker(node.pos, colour[node.line], 1))
         else:
-            map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], "orange", 0))
+            map.add_marker(staticmap.CircleMarker(node.pos, colour[type(node)], 1))
+    for edge in g.edges.data():
+        if edge[2]['type'] == 'tram':
+            map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], colour[edge[0].line], 0))
+        else:
+            map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], "firebrick", 0))
     image = map.render()
-    image.save(filename + ".png")
+    image.save(filename)
 
 def plot_path(g: CityGraph, p: Path, filename: str) -> None:
 
-    map = staticmap.StaticMap(1980, 1080)
+    map = staticmap.StaticMap(3000, 3000)
+    colour = {Access : "black", St_node: "brown", "L1": "red","L2": "darkviolet","L3": "green","L4": "gold","L5": "blue","L9N": "orangered","L9S": "orangered","L10N": "darkturquoise","L10S": "darkturquoise","L11": "greenyellow","FM": "forestgreen"}
     for i in range(len(p) - 1):
         if type(p[i]) == Station and type(p[i+1]) == Station:
-            map.add_line(staticmap.Line((p[i].pos,p[i + 1].pos), 'red', 3))
+            map.add_line(staticmap.Line((p[i].pos,p[i + 1].pos), colour[p[i].line], 3))
         else:
-            map.add_line(staticmap.Line((p[i].pos,p[i + 1].pos), 'black', 3))
-
+            map.add_line(staticmap.Line((p[i].pos,p[i + 1].pos), colour[p[i]], 3))
     for node in p:
         if type(node) == Station:
-            map.add_marker(staticmap.CircleMarker(node.pos, "red", 10))
+            map.add_marker(staticmap.CircleMarker(node.pos, colour[node.line], 10))
         else:
-            map.add_marker(staticmap.CircleMarker(node.pos, "black", 10))
+            map.add_marker(staticmap.CircleMarker(node.pos, colour[node], 10))
     image = map.render()
     image.save(filename + ".png")
 """
 c_t = load_city_graph("./graph.gpickle","./city_graph.gpickle")
 o_g = load_osmnx_graph("./graph.gpickle")
-plot_path(c_t, find_path(o_g,c_t,(2.0713,41.2877),(2.1986,41.4592)),"./Cit") # there is a bug here for some reason
+plot(c_t,"./Cit.png" )
+#plot_path(c_t, find_path(o_g,c_t,(2.0713,41.2877),(2.1986,41.4592)),"./Cit") # there is a bug here for some reason
 # some nodes from osmnx have not been added, must fix build_city_graph
 """

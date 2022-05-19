@@ -1,5 +1,7 @@
+import os
 import restaurants
 import city
+from typing_extensions import TypeAlias
 from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext.filters import Filters
 from typing import List, Dict
@@ -9,8 +11,13 @@ class Bot:
     st_graph: city.OsmnxGraph
     city_graph: city.CityGraph
     restaurants: restaurants.Restaurants
+<<<<<<< HEAD
     restaurants_of_the_search: Dict[int, restaurants.Restaurants]
     coord = Dict[int, List[int]] # (latitude, longitude)
+=======
+    restaurants_of_the_search: Dict[int: restaurants.Restaurants]
+    coord = Dict[List[int]] # (latitude, longitude)
+>>>>>>> e256f5a5534473889114dff757b7af4ceefcd434
 
     def __init__(self) -> None:
         self.st_graph = city.load_osmnx_graph("graph.gpickle")
