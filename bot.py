@@ -5,13 +5,6 @@ from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext.filters import Filters
 from typing import List, Dict
 import os
-"""
-def ExceptionHandler(func):
-    try:
-        ...
-    except:
-        ...
-"""
 
 class Bot:
     st_graph: city.OsmnxGraph
@@ -20,7 +13,6 @@ class Bot:
     restaurants_of_the_search: Dict[int: restaurants.Restaurants]
     coord = Dict[List[int]] # (latitude, longitude)
 
-    #@ExceptionHandler
     def __init__(self) -> None:
         self.st_graph = city.load_osmnx_graph("graph.gpickle")
         self.city_graph = city.load_city_graph("graph.gpickle", "city_graph.gpickle")
@@ -48,15 +40,13 @@ class Bot:
 
     def start(self, update, context) -> None:
         """Escriu el missatge inicial del bot."""
-        self.restaurants_of_the_search[update.message.from_user.id] = []
-        self.coord[update.message.from_user.id] = [0, 0]
         context.bot.send_message(
             chat_id = update.effective_chat.id,
             text = "Hola! Soc un bot per trobar la ruta més ràpida al \
-                    restaurant que vulguis de Barcelona. Fes servir /help \
-                    per obtenir informació sobre les comandes que puc executar,\
-                     i activa l'opció de compartir la localització amb el bot \
-                     per tal de poder començar aquesta aventura")
+            restaurant que vulguis de Barcelona. Fes servir /help \
+            per obtenir informació sobre les comandes que puc executar,\
+            i activa l'opció de compartir la localització amb el bot \
+            per tal de poder començar aquesta aventura")
 
     def update_location(self,update,context) -> None:
         self.coord[update.message.from_user.id][0] = update.edited_message['location']['longitude']
@@ -66,11 +56,11 @@ class Bot:
         """
         Escriu les coordenades de la ubicació des de la qual es traçaran les rutes.
         """
-        if self.coord[update.message.from_user.id] == [0, 0]:
+        if not update.message.from_user.id in self.coord.keys():
             context.bot.send_message(
                 chat_id = update.effective_chat.id,
                 text = "No tenim la teva ubicació. Envia-la. Si ja l'has enviat\
-                         pot tardar una estona en carregar.")
+                 pot tardar una estona en carregar.")
         else:
             context.bot.send_message(
                 chat_id = update.effective_chat.id,
@@ -103,6 +93,12 @@ class Bot:
         Donat el número del restaurant a la llista de la última cerca,
         escriu tota la seva informació.
         """
+        if not update.message.from_user.id in self.restaurants_of_the_search.keys():
+            context.bot.send_message(
+                chat_id = update.effective_chat.id,
+                text = "Has de buscar restaurants amb la comanda /find <query>\
+                abans de buscar la informació d'algun restaurant.")
+
         numero = int(context.args[0])
         print("Informació de", self.restaurants_of_the_search[update.message.from_user.id][numero])
         txt = ""

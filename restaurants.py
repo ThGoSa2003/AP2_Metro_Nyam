@@ -65,7 +65,7 @@ class Restaurant:
         return False
 
 
-Restaurants: TypeAlias = list[Restaurant]
+Restaurants: TypeAlias = List[Restaurant]
 
 
 def read() -> Restaurants:
