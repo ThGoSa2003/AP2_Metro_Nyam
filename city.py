@@ -190,12 +190,3 @@ def plot_path(g: CityGraph, p: Path, filename: str) -> None:
                                                   ct.colour["other"], 10))
     image = map.render()
     image.save(filename)
-"""
-ct_graph = load_city_graph("graph.gpickle", "city_graph.gpickle")
-st_graph = load_osmnx_graph("graph.gpickle")
-src = (2.167517, 41.399242)
-dst = (2.136800, 41.385607)
-path = find_path(st_graph, ct_graph, src, dst)
-
-plot_path(ct_graph, path, "path.png")
-"""
