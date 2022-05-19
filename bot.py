@@ -1,6 +1,7 @@
 import os
 import restaurants
 import city
+from city import St_node
 from typing_extensions import TypeAlias
 from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext.filters import Filters
@@ -49,9 +50,11 @@ class Bot:
             i activa l'opció de compartir la localització amb el bot \
             per tal de poder començar aquesta aventura")
 
-    def update_location(self,update,context) -> None:
-        self.coord[update.message.from_user.id][0] = update.edited_message['location']['longitude']
-        self.coord[update.message.from_user.id][1] = update.edited_message['location']['latitude']
+    def update_location(self, update, context) -> None:
+        self.coord[update.message.from_user.id] = [0, 0]
+        self.coord[update.message.from_user.id][0] = update.message['location']['longitude']
+        self.coord[update.message.from_user.id][1] = update.message['location']['latitude']
+        print("user", update.message.from_user.id, "has updated his location.")
 
     def get_location(self, update, context) -> None:
         """
@@ -81,7 +84,8 @@ class Bot:
         amb la paraula a algun camp seu (nom, descripció, ubicació etc.)
         """
         query = str(context.args[0])
-        self.restaurants_of_the_search[update.message.from_user.id] = all_restaurants.find(query, self.restaurants)
+        restaurants.find(query, self.all_restaurants)
+        self.restaurants_of_the_search[update.message.from_user.id] = restaurants.find(query, self.all_restaurants)
         txt = ""
         for i in range(len(self.restaurants_of_the_search[update.message.from_user.id])):
             txt += str(i) + " " + str(self.restaurants_of_the_search[update.message.from_user.id][i].name) + "\n"
@@ -143,7 +147,7 @@ class Bot:
                     chat_id=update.effective_chat.id,
                     photo=open("path" + str(update.message.from_user.id) + ".png", 'rb')) #id usuari
                 os.remove("path" + str(update.message.from_user.id) + ".png")
-                
+
 def main():
     """
     Crea un bot de telegram que permet trobar i arribar a restaurants
