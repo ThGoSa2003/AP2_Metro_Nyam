@@ -169,10 +169,11 @@ def plot_path(g: CityGraph, p: Path, filename: str) -> None:
         else:
             map.add_marker(staticmap.CircleMarker(node.pos, colour[node], 10))
     image = map.render()
-    image.save(filename)
-
+    image.save(filename + ".png")
+"""
 c_t = load_city_graph("./graph.gpickle","./city_graph.gpickle")
 o_g = load_osmnx_graph("./graph.gpickle")
 plot(c_t,"./Cit.png" )
 #plot_path(c_t, find_path(o_g,c_t,(2.0713,41.2877),(2.1986,41.4592)),"./Cit") # there is a bug here for some reason
 # some nodes from osmnx have not been added, must fix build_city_graph
+"""
