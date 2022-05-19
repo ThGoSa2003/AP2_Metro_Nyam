@@ -8,13 +8,11 @@ from typing import List, Dict
 import os
 
 class Bot:
-    st_graph: city.OsmnxGraph
-    city_graph: city.CityGraph
-    restaurants: restaurants.Restaurants
-    restaurants_of_the_search: Dict[int, restaurants.Restaurants]
-    coord = Dict[int, List[int]] # (latitude, longitude)
-    restaurants_of_the_search: Dict[int: restaurants.Restaurants]
-    coord = Dict[int, List[int]] # (latitude, longitude)
+    st_graph: TypeAlias = city.OsmnxGraph
+    city_graph: TypeAlias = city.CityGraph
+    restaurants: TypeAlias = restaurants.Restaurants
+    restaurants_of_the_search: TypeAlias = Dict[int, restaurants.Restaurants]
+    coord: TypeAlias = Dict[int, List[int]] # (latitude, longitude)
 
     def __init__(self) -> None:
         self.st_graph = city.load_osmnx_graph("graph.gpickle")
