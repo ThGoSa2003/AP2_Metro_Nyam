@@ -10,7 +10,7 @@ import os
 class Bot:
     st_graph: TypeAlias = city.OsmnxGraph
     city_graph: TypeAlias = city.CityGraph
-    restaurants: TypeAlias = restaurants.Restaurants
+    all_restaurants: TypeAlias = restaurants.Restaurants
     restaurants_of_the_search: TypeAlias = Dict[int, restaurants.Restaurants]
     coord: TypeAlias = Dict[int, List[int]] # (latitude, longitude)
 
@@ -81,7 +81,7 @@ class Bot:
         amb la paraula a algun camp seu (nom, descripció, ubicació etc.)
         """
         query = str(context.args[0])
-        self.restaurants_of_the_search[update.message.from_user.id] = restaurants.find(query, self.restaurants)
+        self.restaurants_of_the_search[update.message.from_user.id] = all_restaurants.find(query, self.restaurants)
         txt = ""
         for i in range(len(self.restaurants_of_the_search[update.message.from_user.id])):
             txt += str(i) + " " + str(self.restaurants_of_the_search[update.message.from_user.id][i].name) + "\n"
