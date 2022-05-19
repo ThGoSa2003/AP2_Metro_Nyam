@@ -109,23 +109,10 @@ Path : TypeAlias = List[Node]
 
 def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
 
-    def w(n1, n2, d):
-        type = d['type']
-        vel = 0
-        if type == 'walk':
-            vel = 2
-        elif type == 'tram':
-            vel = 10
-        elif type == 'enllaç':
-            vel = 10000
-        elif type == 'acces':
-            vel = 2
-        else:
-            vel = 1
-        return d['distance'] / vel
-
+    velocity = {'walk': 1, 'tram': 2.5,'enllaç':1, 'acces': 1}
     src_node = ox.distance.nearest_nodes(ox_g,src[0],src[1])
     dst_node = ox.distance.nearest_nodes(ox_g,dst[0],dst[1])
+    print(g.nodes)
     for node in g.nodes:
         if type(src_node) == int or type(dst_node) == int:
             if src_node == node.id:
@@ -135,7 +122,7 @@ def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
         else:
             break
 
-    return networkx.shortest_path(g, src_node, dst_node, weight = w)
+    return networkx.shortest_path(g, src_node, dst_node, weight = lambda n1, n2, d: d['distance']/d['type'])
 
 def show(g: CityGraph) -> None:
     positions = {}
