@@ -101,8 +101,6 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
 
 
 Coord : TypeAlias = Tuple[float, float]   # (latitude, longitude)
-
-
 Node : TypeAlias = Union[Access, Station]
 Path : TypeAlias = List[Node]
 
@@ -112,7 +110,6 @@ def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
     velocity = {'walk': 1, 'tram': 2.5,'enllaç':1, 'acces': 1}
     src_node = ox.distance.nearest_nodes(ox_g,src[0],src[1])
     dst_node = ox.distance.nearest_nodes(ox_g,dst[0],dst[1])
-    print(g.nodes)
     for node in g.nodes:
         if type(src_node) == int or type(dst_node) == int:
             if src_node == node.id:
@@ -121,8 +118,7 @@ def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
                 dst_node = node
         else:
             break
-
-    return networkx.shortest_path(g, src_node, dst_node, weight = lambda n1, n2, d: d['distance']/d['type'])
+    return networkx.shortest_path(g, src_node, dst_node, weight = lambda n1, n2, d: d['distance']/velocity[d['type']])
 
 def show(g: CityGraph) -> None:
     positions = {}
@@ -140,40 +136,42 @@ def plot(g: CityGraph, filename: str) -> None:
     """
 
     map = staticmap.StaticMap(3000, 3000)
-    colour = {Access : "black", St_node: "brown", "L1": "red","L2": "darkviolet","L3": "green","L4": "gold","L5": "blue","L9N": "orangered","L9S": "orangered","L10N": "darkturquoise","L10S": "darkturquoise","L11": "greenyellow","FM": "forestgreen"}
+    colour = {"other" : "black", "L1": "red","L2": "darkviolet","L3": "green","L4": "gold","L5": "blue","L9N": "orangered","L9S": "orangered","L10N": "darkturquoise","L10S": "darkturquoise","L11": "greenyellow","FM": "forestgreen"}
     for node in g.nodes:
         if type(node) == Station:
             map.add_marker(staticmap.CircleMarker(node.pos, colour[node.line], 1))
         else:
-            map.add_marker(staticmap.CircleMarker(node.pos, colour[type(node)], 1))
+            map.add_marker(staticmap.CircleMarker(node.pos, colour["other"], 1))
     for edge in g.edges.data():
         if edge[2]['type'] == 'tram':
             map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], colour[edge[0].line], 0))
         else:
-            map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], "firebrick", 0))
+            map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], colour["other"], 0))
     image = map.render()
     image.save(filename)
 
 def plot_path(g: CityGraph, p: Path, filename: str) -> None:
-
+    """
+    :param g: a graph of the city.
+    :param p: a path inside of the graph
+    :effect: saves an image of the path in filename
+    """
+    
     map = staticmap.StaticMap(3000, 3000)
-    colour = {Access : "black", St_node: "brown", "L1": "red","L2": "darkviolet","L3": "green","L4": "gold","L5": "blue","L9N": "orangered","L9S": "orangered","L10N": "darkturquoise","L10S": "darkturquoise","L11": "greenyellow","FM": "forestgreen"}
+    colour = {"other" : "black", "L1": "red","L2": "darkviolet","L3": "green","L4": "gold","L5": "blue","L9N": "orangered","L9S": "orangered","L10N": "darkturquoise","L10S": "darkturquoise","L11": "greenyellow","FM": "forestgreen"}
     for i in range(len(p) - 1):
         if type(p[i]) == Station and type(p[i+1]) == Station:
             map.add_line(staticmap.Line((p[i].pos,p[i + 1].pos), colour[p[i].line], 3))
         else:
-            map.add_line(staticmap.Line((p[i].pos,p[i + 1].pos), colour[p[i]], 3))
+            map.add_line(staticmap.Line((p[i].pos,p[i + 1].pos), colour["other"], 3))
     for node in p:
         if type(node) == Station:
             map.add_marker(staticmap.CircleMarker(node.pos, colour[node.line], 10))
         else:
-            map.add_marker(staticmap.CircleMarker(node.pos, colour[node], 10))
+            map.add_marker(staticmap.CircleMarker(node.pos, colour["other"], 10))
     image = map.render()
-    image.save(filename + ".png")
-"""
+    image.save(filename)
+
 c_t = load_city_graph("./graph.gpickle","./city_graph.gpickle")
 o_g = load_osmnx_graph("./graph.gpickle")
-plot(c_t,"./Cit.png" )
-#plot_path(c_t, find_path(o_g,c_t,(2.0713,41.2877),(2.1986,41.4592)),"./Cit") # there is a bug here for some reason
-# some nodes from osmnx have not been added, must fix build_city_graph
-"""
+plot_path(c_t, find_path(o_g,c_t,(2.0713,41.0),(2.1986,41.4592)),"./path.png") # there is a bug here for some reason
