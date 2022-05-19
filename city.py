@@ -3,6 +3,7 @@ import osmnx as ox
 import haversine
 import pandas as pd
 import staticmap
+import constants
 from metro import Position, get_metro_graph, MetroGraph, Access, Station
 import os
 from typing import Optional, Tuple, List, Union, Dict
@@ -12,6 +13,10 @@ from typing_extensions import TypeAlias
 
 @dataclass
 class St_node:
+    """
+    This represents a street node.
+    """
+
     id: int
     pos: Position
 
@@ -77,7 +82,7 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
 
     st_nodes_dict = {k : St_node(k, (v['x'], v['y'])) for k, v in g1.nodes.data()}
     st_nodes = [St_node(k, (v['x'], v['y'])) for k, v in g1.nodes.data()]
-    st_nodes.sort(key = lambda s : (s.id)) # try without this
+#    st_nodes.sort(key = lambda s : (s.id)) # try without this
     city_graph.add_nodes_from(st_nodes)
 
     for edge_n_atribiute in g1.edges.data():
@@ -106,8 +111,13 @@ Path : TypeAlias = List[Node]
 
 
 def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
-
-    velocity = {'walk': 1, 'tram': 2.5,'enllaç':1, 'acces': 1}
+    """
+    :param ox_g: a graph of the streets of the city.
+    :param g: a graph of the city
+    :src: the starting node.
+    :dst: the enging node.
+    :returns: the shortest path from src to dst.
+    """
     src_node = ox.distance.nearest_nodes(ox_g,src[0],src[1])
     dst_node = ox.distance.nearest_nodes(ox_g,dst[0],dst[1])
     for node in g.nodes:
@@ -118,9 +128,15 @@ def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Coord, dst: Coord) -> Path:
                 dst_node = node
         else:
             break
-    return networkx.shortest_path(g, src_node, dst_node, weight = lambda n1, n2, d: d['distance']/velocity[d['type']])
+    return networkx.shortest_path(g, src_node, dst_node, weight = lambda n1, n2, d: d['distance']/constants.velocity[d['type']])
 
 def show(g: CityGraph) -> None:
+
+    """
+    :param g: a graph of the city.
+    :effect: a plot of the hole city will be optuped as an image.
+    """
+
     positions = {}
     for n in nx.nodes(g):
         positions[n] = n.pos
@@ -135,18 +151,17 @@ def plot(g: CityGraph, filename: str) -> None:
     the colours will be different.
     """
 
-    map = staticmap.StaticMap(3000, 3000)
-    colour = {"other" : "black", "L1": "red","L2": "darkviolet","L3": "green","L4": "gold","L5": "blue","L9N": "orangered","L9S": "orangered","L10N": "darkturquoise","L10S": "darkturquoise","L11": "greenyellow","FM": "forestgreen"}
+    map = staticmap.StaticMap(constants.resolution_x, constants.resolution_y)
     for node in g.nodes:
         if type(node) == Station:
-            map.add_marker(staticmap.CircleMarker(node.pos, colour[node.line], 1))
+            map.add_marker(staticmap.CircleMarker(node.pos, constants.colour[node.line], 1))
         else:
-            map.add_marker(staticmap.CircleMarker(node.pos, colour["other"], 1))
+            map.add_marker(staticmap.CircleMarker(node.pos, constants.colour["other"], 1))
     for edge in g.edges.data():
         if edge[2]['type'] == 'tram':
-            map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], colour[edge[0].line], 0))
+            map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], constants.colour[edge[0].line], 0))
         else:
-            map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], colour["other"], 0))
+            map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], constants.colour["other"], 0))
     image = map.render()
     image.save(filename)
 
@@ -156,19 +171,19 @@ def plot_path(g: CityGraph, p: Path, filename: str) -> None:
     :param p: a path inside of the graph
     :effect: saves an image of the path in filename
     """
-    
-    map = staticmap.StaticMap(3000, 3000)
+
+    map = staticmap.StaticMap(constants.resolution_x, constants.resolution_y)
     colour = {"other" : "black", "L1": "red","L2": "darkviolet","L3": "green","L4": "gold","L5": "blue","L9N": "orangered","L9S": "orangered","L10N": "darkturquoise","L10S": "darkturquoise","L11": "greenyellow","FM": "forestgreen"}
     for i in range(len(p) - 1):
         if type(p[i]) == Station and type(p[i+1]) == Station:
-            map.add_line(staticmap.Line((p[i].pos,p[i + 1].pos), colour[p[i].line], 3))
+            map.add_line(staticmap.Line((p[i].pos,p[i + 1].pos), constants.colour[p[i].line], 3))
         else:
-            map.add_line(staticmap.Line((p[i].pos,p[i + 1].pos), colour["other"], 3))
+            map.add_line(staticmap.Line((p[i].pos,p[i + 1].pos), constants.colour["other"], 3))
     for node in p:
         if type(node) == Station:
-            map.add_marker(staticmap.CircleMarker(node.pos, colour[node.line], 10))
+            map.add_marker(staticmap.CircleMarker(node.pos, constants.colour[node.line], 10))
         else:
-            map.add_marker(staticmap.CircleMarker(node.pos, colour["other"], 10))
+            map.add_marker(staticmap.CircleMarker(node.pos, constants.colour["other"], 10))
     image = map.render()
     image.save(filename)
 
