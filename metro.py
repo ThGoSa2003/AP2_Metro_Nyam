@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing_extensions import TypeAlias
 from typing import Optional, Tuple, List, Union
 
-Position : TypeAlias = tuple[float,float]
+Position : TypeAlias = Tuple[float,float]
 
 @dataclass
 class Station:
@@ -81,7 +81,7 @@ def get_metro_graph() -> MetroGraph:
         metro_graph.add_edge(stations_dict[a.name_station], a, type = "acces", distance = distance(a,stations_dict[a.name_station]))
     return metro_graph
 
-Stations : TypeAlias = list[Station]
+Stations : TypeAlias = List[Station]
 
 
 def read_stations() -> Stations:
@@ -104,7 +104,7 @@ def read_stations() -> Stations:
     except:
         sys.exit("We cannot find data/estacions.csv, please add it in")
 
-Accesses : TypeAlias = list[Access]
+Accesses : TypeAlias = List[Access]
 
 def read_accesses() -> Accesses:
     """
@@ -142,7 +142,7 @@ def plot(g: MetroGraph, filename: str) -> None:
     """
     :param g: a graph of the metro of the city
     :param filename: a path and name to save the image
-    :effect: an image of g will be saved in filename  
+    :effect: an image of g will be saved in filename
     """
 
     map = staticmap.StaticMap(1980, 1080)

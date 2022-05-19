@@ -1,5 +1,4 @@
 import restaurants
-from city import St_node
 import city
 from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext.filters import Filters
@@ -10,8 +9,8 @@ class Bot:
     st_graph: city.OsmnxGraph
     city_graph: city.CityGraph
     restaurants: restaurants.Restaurants
-    restaurants_of_the_search: Dict[int: restaurants.Restaurants]
-    coord = Dict[List[int]] # (latitude, longitude)
+    restaurants_of_the_search: Dict[int, restaurants.Restaurants]
+    coord = Dict[int, List[int]] # (latitude, longitude)
 
     def __init__(self) -> None:
         self.st_graph = city.load_osmnx_graph("graph.gpickle")
