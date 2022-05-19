@@ -99,35 +99,51 @@ class Bot:
                 chat_id = update.effective_chat.id,
                 text = "Has de buscar restaurants amb la comanda /find <query>\
                 abans de buscar la informació d'algun restaurant.")
-
-        numero = int(context.args[0])
-        print("Informació de", self.restaurants_of_the_search[update.message.from_user.id][numero])
-        txt = ""
-        for attribute, value in vars(self.restaurants_of_the_search[update.message.from_user.id][numero]).items():
-            txt += str(attribute) + ": " + str(value) + "\n"
-        context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=txt)
+        else:
+            numero = int(context.args[0])
+            if numero < 0 or numero >= len(self.restaurants_of_the_search[update.message.from_user.id]):
+                context.bot.send_message(
+                    chat_id = update.effective_chat.id,
+                    text = "El número de restaurant que has introduït no és a \
+                    la llista de cerca més recent.")
+            else:
+                print("Informació de", self.restaurants_of_the_search[update.message.from_user.id][numero])
+                txt = ""
+                for attribute, value in vars(self.restaurants_of_the_search[update.message.from_user.id][numero]).items():
+                    txt += str(attribute) + ": " + str(value) + "\n"
+                context.bot.send_message(
+                    chat_id=update.effective_chat.id,
+                    text=txt)
 
     def guide(self, update, context):
         """
         Donat el número del restaurant a la llista de la última cerca,
         mostra a pantalla un mapa de com arribar-hi.
         """
-        numero = int(context.args[0])
-        restaurant = self.restaurants_of_the_search[update.message.from_user.id][numero]
-        restaurant_pos = (restaurant.geo_epgs_25831_x, restaurant.geo_epgs_25831_y)
-        city.plot_path(self.city_graph, city.find_path(self.st_graph,
-            self.city_graph, self.coord,
-            restaurant_pos),
-            "path")
-        context.bot.send_photo(
-            chat_id=update.effective_chat.id,
-            photo=open("path" + str(update.message.from_user.id) + ".png", 'rb')) #id usuari
-        os.remove("path" + str(update.message.from_user.id) + ".png")
-
-
-
+        if not update.message.from_user.id in self.restaurants_of_the_search.keys():
+            context.bot.send_message(
+                chat_id = update.effective_chat.id,
+                text = "Has de buscar restaurants amb la comanda /find <query>\
+                abans de buscar la informació d'algun restaurant.")
+        else:
+            numero = int(context.args[0])
+            if numero < 0 or numero >= len(self.restaurants_of_the_search[update.message.from_user.id]):
+                context.bot.send_message(
+                    chat_id = update.effective_chat.id,
+                    text = "El número de restaurant que has introduït no és a \
+                    la llista de cerca més recent.")
+            else:
+                restaurant = self.restaurants_of_the_search[update.message.from_user.id][numero]
+                restaurant_pos = (restaurant.geo_epgs_25831_x, restaurant.geo_epgs_25831_y)
+                city.plot_path(self.city_graph, city.find_path(self.st_graph,
+                    self.city_graph, self.coord,
+                    restaurant_pos),
+                    "path")
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open("path" + str(update.message.from_user.id) + ".png", 'rb')) #id usuari
+                os.remove("path" + str(update.message.from_user.id) + ".png")
+                
 def main():
     """
     Crea un bot de telegram que permet trobar i arribar a restaurants
