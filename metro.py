@@ -3,56 +3,10 @@ import sys
 import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
-from dataclasses import dataclass
-from typing_extensions import TypeAlias
-from typing import Optional, Tuple, List, Union
+from nodes import *
+from constants import resolution_x, resolution_y
 
-Position : TypeAlias = Tuple[float,float]
-
-@dataclass
-class Station:
-    """
-    This class represents a station within the metro of a city
-    """
-
-    id: int
-    name: str
-    order: int
-    line: str
-    pos: Position
-
-    def __hash__(self) -> int:
-        return hash(self.id)
-
-@dataclass
-class Access:
-    """
-    This class represents an access point to the metro of a city
-    """
-
-    id: int
-    name: str
-    accessibility: bool
-    name_station: str
-    pos: Position
-
-    def __hash__(self) -> int:
-        return hash(self.id)
-
-
-def distance(node1: Union[Station, Access, None], node2: Union[Station, Access, None]) -> float:
-    """
-    :param node1, node2: any class with attribute pos (latitude and longitude)
-    :returns: the euclidean distance between node1 node2
-    """
-
-    try:
-        return ((node1.pos[0] - node2.pos[0])**2 + (node1.pos[1] - node2.pos[1])**2)**1/2
-    except AttributeError:
-        raise AttributeError("You tried to get the distance of a class that has no attribute pos")
-        sys.exit()
-
-MetroGraph = nx.Graph
+MetroGraph: TypeAlias = nx.Graph
 
 def get_metro_graph() -> MetroGraph:
     """
@@ -62,28 +16,37 @@ def get_metro_graph() -> MetroGraph:
 
     stations = read_stations()
     accesses = read_accesses()
+
     metro_graph = MetroGraph()
     metro_graph.add_nodes_from(stations)
     metro_graph.add_nodes_from(accesses)
+
     for i in range(len(stations) - 1):
         if stations[i].order < stations[i + 1].order:
-            metro_graph.add_edge(stations[i], stations[i + 1], type = "tram", distance = distance(stations[i],stations[i+1]))
-            metro_graph.add_edge(stations[i + 1], stations[i], type = "tram", distance = distance(stations[i],stations[i+1]))
+            metro_graph.add_edge(stations[i], stations[i + 1], type = "tram",
+                                 distance = distance(stations[i],stations[i+1]))
+            metro_graph.add_edge(stations[i + 1], stations[i], type = "tram",
+                                 distance = distance(stations[i],stations[i+1]))
+
     stations.sort(key = lambda s : (s.name,s.line))
+
     for i in range(len(stations) - 1):
         if stations[i].name == stations[i + 1].name:
-            metro_graph.add_edge(stations[i], stations[i + 1], type = "enllaç",distance = distance(stations[i],stations[i+1]))
-            metro_graph.add_edge(stations[i + 1], stations[i], type = "enllaç",distance = distance(stations[i],stations[i+1]))
+            metro_graph.add_edge(stations[i], stations[i + 1], type = "enllaç",
+                                 distance = distance(stations[i],stations[i+1]))
+            metro_graph.add_edge(stations[i + 1], stations[i], type = "enllaç",
+                                 distance = distance(stations[i],stations[i+1]))
+
     stations_dict = {}
     for s in stations:
         stations_dict[s.name] = s
     for a in accesses:
-        metro_graph.add_edge(a, stations_dict[a.name_station], type = "acces", distance = distance(a,stations_dict[a.name_station]))
-        metro_graph.add_edge(stations_dict[a.name_station], a, type = "acces", distance = distance(a,stations_dict[a.name_station]))
+        metro_graph.add_edge(a, stations_dict[a.name_station], type = "acces",
+                        distance = distance(a,stations_dict[a.name_station]))
+        metro_graph.add_edge(stations_dict[a.name_station], a, type = "acces",
+                        distance = distance(a,stations_dict[a.name_station]))
+
     return metro_graph
-
-Stations : TypeAlias = List[Station]
-
 
 def read_stations() -> Stations:
     """
@@ -104,8 +67,6 @@ def read_stations() -> Stations:
         return stations
     except:
         sys.exit("We cannot find data/estacions.csv, please add it in")
-
-Accesses : TypeAlias = List[Access]
 
 def read_accesses() -> Accesses:
     """
@@ -146,7 +107,7 @@ def plot(g: MetroGraph, filename: str) -> None:
     :effect: an image of g will be saved in filename
     """
 
-    map = staticmap.StaticMap(1980, 1080)
+    map = staticmap.StaticMap(resolution_x, resolution_y)
     for node in g.nodes:
         map.add_marker(staticmap.CircleMarker(node.pos, "red", 10))
     for edge in g.edges:

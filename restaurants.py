@@ -2,11 +2,8 @@ import fuzzysearch
 import sys
 import pandas as pd
 from dataclasses import *
-from typing import Optional
-from typing_extensions import TypeAlias
 from typing import Optional, List
-import sys
-
+from typing_extensions import TypeAlias
 
 @dataclass
 class Restaurant:
@@ -74,11 +71,11 @@ def read() -> Restaurants:
     """
 
     try:
-        csv_restaurants = pd.read_csv('./data/restaurants.csv')
-        dim = csv_restaurants.shape
+        csv_res = pd.read_csv('./data/restaurants.csv')
+        dim = csv_res.shape
         restaurants = []
         for i in range(dim[0]):
-            restaurants.append(Restaurant(*[j for j in csv_restaurants.iloc[i, :]]))
+            restaurants.append(Restaurant(*[j for j in csv_res.iloc[i, :]]))
         return restaurants
     except:
         sys.exit("I cannot find the data/restaurants.csv, please add it in it")
@@ -91,4 +88,4 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
     :returns: a list of the restaurants that contain query in any field
     """
 
-    return [restaurant for restaurant in restaurants if restaurant.contains(query)]
+    return [r for r in restaurants if r.contains(query)]
