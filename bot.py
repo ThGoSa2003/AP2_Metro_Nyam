@@ -11,14 +11,14 @@ import os
 
 
 class Bot:
-    street_graph: TypeAlias = city.OsmnxGraph
+    st_graph: TypeAlias = city.OsmnxGraph
     city_graph: TypeAlias = city.CityGraph
     all_restaurants: TypeAlias = restaurants.Restaurants
     res_list: TypeAlias = Dict[int, restaurants.Restaurants]
     coord: TypeAlias = Dict[int, List[int]]  # (latitude, longitude)
 
     def __init__(self) -> None:
-        self.street_graph = city.load_osmnx_graph("graph.gpickle")
+        self.st_graph = city.load_osmnx_graph("graph.gpickle")
         self.city_graph = city.load_city_graph("graph.gpickle",
                                                "city_graph.gpickle")
         self.all_restaurants = restaurants.read()
@@ -46,7 +46,6 @@ class Bot:
         self.coord[id] = [0, 0]
         self.coord[id][0] = update.message['location']['longitude']
         self.coord[id][1] = update.message['location']['latitude']
-        print("user", id, "has updated his location.")
 
     def get_location(self, update, context) -> None:
         """
@@ -82,6 +81,8 @@ class Bot:
         Donada una paraula per filtrar, escriu tots els restaurants de Barcelona
         amb la paraula a algun camp seu (nom, descripció, ubicació etc.)
         """
+        if len(context.args) == 0:
+            return
         query = str(context.args[0])
         id = update.message.from_user.id  # id usuari
         restaurants.find(query, self.all_restaurants)
@@ -154,7 +155,7 @@ class Bot:
                 res_long = restaurant.geo_epgs_4326_y
                 res_lat = restaurant.geo_epgs_4326_x
                 restaurant_pos = (res_long, res_lat)
-                city.plot_path(self.city_graph, city.find_path(self.street_graph,
+                city.plot_path(self.city_graph, city.find_path(self.st_graph,
                                                                self.city_graph, self.coord[id], restaurant_pos),
                                "path" + str(id) + ".png")
                 context.bot.send_photo(
@@ -190,6 +191,7 @@ def main():
     dispatcher.add_handler(CommandHandler('info', bot.info))
     dispatcher.add_handler(CommandHandler('guide', bot.guide))
     updater.start_polling()
+    updater.idle()
 
 
 if __name__ == "__main__":

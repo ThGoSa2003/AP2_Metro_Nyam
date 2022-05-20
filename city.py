@@ -81,7 +81,6 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
     st_nodes_dict = {k: St_node(k, (v['x'], v['y']))
                      for k, v in g1.nodes.data()}
     st_nodes = [St_node(k, (v['x'], v['y'])) for k, v in g1.nodes.data()]
-#    st_nodes.sort(key = lambda s : (s.id)) # try without this
     city_graph.add_nodes_from(st_nodes)
 
     for edge_n_attribute in g1.edges.data():
