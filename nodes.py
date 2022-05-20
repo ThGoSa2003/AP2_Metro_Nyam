@@ -4,6 +4,7 @@ from typing import Union, List, Tuple
 
 Position: TypeAlias = Tuple[float, float]
 
+
 @dataclass
 class St_node:
     """
@@ -15,6 +16,7 @@ class St_node:
 
     def __hash__(self):
         return hash(self.id)
+
 
 @dataclass
 class Station:
@@ -31,6 +33,7 @@ class Station:
     def __hash__(self) -> int:
         return hash(self.id)
 
+
 @dataclass
 class Access:
     """
@@ -46,11 +49,13 @@ class Access:
     def __hash__(self) -> int:
         return hash(self.id)
 
-Stations : TypeAlias = List[Station]
-Accesses : TypeAlias = List[Access]
 
-Node : TypeAlias = Union[Access, Station, St_node, None]
-Path : TypeAlias = List[Node]
+Stations: TypeAlias = List[Station]
+Accesses: TypeAlias = List[Access]
+
+Node: TypeAlias = Union[Access, Station, St_node, None]
+Path: TypeAlias = List[Node]
+
 
 def distance(node1: Node, node2: Node) -> float:
     """

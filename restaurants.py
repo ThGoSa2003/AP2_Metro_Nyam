@@ -5,6 +5,7 @@ from dataclasses import *
 from typing import Optional, List
 from typing_extensions import TypeAlias
 
+
 @dataclass
 class Restaurant:
     """
@@ -77,7 +78,7 @@ def read() -> Restaurants:
         for i in range(dim[0]):
             restaurants.append(Restaurant(*[j for j in csv_res.iloc[i, :]]))
         return restaurants
-    except:
+    except Exception:
         sys.exit("I cannot find the data/restaurants.csv, please add it in it")
 
 

@@ -1,3 +1,4 @@
+from matplotlib import pyplot as plt
 import networkx
 import osmnx as ox
 import haversine
@@ -9,15 +10,17 @@ import os
 from typing import Dict
 from nodes import *
 
-CityGraph : TypeAlias = networkx.Graph
-OsmnxGraph : TypeAlias = networkx.MultiDiGraph
+CityGraph: TypeAlias = networkx.Graph
+OsmnxGraph: TypeAlias = networkx.MultiDiGraph
+
 
 def get_osmnx_graph() -> OsmnxGraph:
     """
     :returns: a networkx graph of the city of Barcelona
     """
 
-    return ox.graph_from_place("Barcelona, Spain", network_type = "walk")
+    return ox.graph_from_place("Barcelona, Spain", network_type="walk")
+
 
 def save_osmnx_graph(g: OsmnxGraph, filename: str) -> None:
     """
@@ -26,7 +29,8 @@ def save_osmnx_graph(g: OsmnxGraph, filename: str) -> None:
     :effect: g must be stored in filename with extension gpickle
     """
 
-    networkx.write_gpickle(g, path = filename)
+    networkx.write_gpickle(g, path=filename)
+
 
 def load_osmnx_graph(filename: str) -> OsmnxGraph:
     """
@@ -35,14 +39,19 @@ def load_osmnx_graph(filename: str) -> OsmnxGraph:
     """
 
     if not os.path.exists(filename):
-        save_osmnx_graph(get_osmnx_graph(),filename)
+        save_osmnx_graph(get_osmnx_graph(), filename)
     return networkx.read_gpickle(filename)
+
 
 def save_city_graph(g: CityGraph, filename: str) -> None:
     """
-    might get rid of this one
+    :param g: a graph of the city
+    :param filename: a file where to store the graph
+    :effect: an image of g is stored in filename
     """
-    networkx.write_gpickle(g, path = filename)
+
+    networkx.write_gpickle(g, path=filename)
+
 
 def load_city_graph(filename_osmnx: str, filename_city: str) -> CityGraph:
     """
@@ -69,8 +78,9 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
     city_graph = networkx.Graph()
     metro_nodes = [node for node in g2.nodes]
 
+    st_nodes_dict = {k: St_node(k, (v['x'], v['y']))
+                     for k, v in g1.nodes.data()}
     st_nodes = [St_node(k, (v['x'], v['y'])) for k, v in g1.nodes.data()]
-    st_nodes_dict = {n[0]: n[1] for n in st_nodes}
 #    st_nodes.sort(key = lambda s : (s.id)) # try without this
     city_graph.add_nodes_from(st_nodes)
 
@@ -80,13 +90,13 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
             node2 = st_nodes_dict[edge_n_attribute[1]]
             if 'name' in edge_n_attribute[2]:
                 city_graph.add_edge(node1, node2,
-                                    distance = edge_n_attribute[2]['length'],
-                                    street_name = edge_n_attribute[2]['name'],
-                                    type = "walk")
+                                    distance=edge_n_attribute[2]['length'],
+                                    street_name=edge_n_attribute[2]['name'],
+                                    type="walk")
             else:
                 city_graph.add_edge(node1, node2,
-                                    distance = edge_n_attribute[2]['length'],
-                                    type = "walk")
+                                    distance=edge_n_attribute[2]['length'],
+                                    type="walk")
 
     city_graph.add_edges_from(g2.edges.data())
     city_graph.add_nodes_from(metro_nodes)
@@ -96,10 +106,11 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
             closest_st_node = ox.distance.nearest_nodes(g1, node[0].pos[0],
                                                         node[0].pos[1])
             city_graph.add_edge(node[0], st_nodes_dict[closest_st_node],
-                                type = "walk", distance = distance(node[0],
+                                type="walk", distance=distance(node[0],
                                 st_nodes_dict[closest_st_node]))
 
     return city_graph
+
 
 def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Position, dst: Position) -> Path:
     """
@@ -110,8 +121,8 @@ def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Position, dst: Position) -> P
     :returns: the shortest path from src to dst.
     """
 
-    src_node = ox.distance.nearest_nodes(ox_g,src[0],src[1])
-    dst_node = ox.distance.nearest_nodes(ox_g,dst[0],dst[1])
+    src_node = ox.distance.nearest_nodes(ox_g, src[0], src[1])
+    dst_node = ox.distance.nearest_nodes(ox_g, dst[0], dst[1])
     for node in g.nodes:
         if type(src_node) == int or type(dst_node) == int:
             if src_node == node.id:
@@ -121,21 +132,22 @@ def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Position, dst: Position) -> P
         else:
             break
 
-    w = lambda n1, n2, d: d['distance']/ct.velocity[d['type']]
-    return networkx.shortest_path(g, src_node, dst_node, weight = w)
+    def w(n1, n2, d): return d['distance']/ct.velocity[d['type']]
+    return networkx.shortest_path(g, src_node, dst_node, weight=w)
+
 
 def show(g: CityGraph) -> None:
-
     """
     :param g: a graph of the city.
     :effect: a plot of the hole city will be optuped as an image.
     """
 
     positions = {}
-    for n in nx.nodes(g):
+    for n in networkx.nodes(g):
         positions[n] = n.pos
-    nx.draw_networkx(g,pos = positions, node_size = 10, with_labels = False)
+    networkx.draw_networkx(g, pos=positions, node_size=10, with_labels=False)
     plt.show()
+
 
 def plot(g: CityGraph, filename: str) -> None:
     """
@@ -162,9 +174,10 @@ def plot(g: CityGraph, filename: str) -> None:
                                         ct.colour[edge[0].line], 0))
         else:
             map.add_line(staticmap.Line([edge[0].pos, edge[1].pos],
-                                         ct.colour["other"], 0))
+                                        ct.colour["other"], 0))
     image = map.render()
     image.save(filename)
+
 
 def plot_path(g: CityGraph, p: Path, filename: str) -> None:
     """
@@ -176,10 +189,10 @@ def plot_path(g: CityGraph, p: Path, filename: str) -> None:
     map = staticmap.StaticMap(ct.resolution_x, ct.resolution_y)
     for i in range(len(p) - 1):
         if type(p[i]) == Station and type(p[i+1]) == Station:
-            map.add_line(staticmap.Line((p[i].pos,p[i + 1].pos),
+            map.add_line(staticmap.Line((p[i].pos, p[i + 1].pos),
                                         ct.colour[p[i].line], 3))
         else:
-            map.add_line(staticmap.Line((p[i].pos,p[i + 1].pos),
+            map.add_line(staticmap.Line((p[i].pos, p[i + 1].pos),
                                         ct.colour["other"], 3))
     for node in p:
         if type(node) == Station:

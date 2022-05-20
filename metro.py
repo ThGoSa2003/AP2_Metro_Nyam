@@ -8,6 +8,7 @@ from constants import resolution_x, resolution_y
 
 MetroGraph: TypeAlias = nx.Graph
 
+
 def get_metro_graph() -> MetroGraph:
     """
     :returns: A graph of the metro of the city
@@ -23,30 +24,31 @@ def get_metro_graph() -> MetroGraph:
 
     for i in range(len(stations) - 1):
         if stations[i].order < stations[i + 1].order:
-            metro_graph.add_edge(stations[i], stations[i + 1], type = "tram",
-                                 distance = distance(stations[i],stations[i+1]))
-            metro_graph.add_edge(stations[i + 1], stations[i], type = "tram",
-                                 distance = distance(stations[i],stations[i+1]))
+            metro_graph.add_edge(stations[i], stations[i + 1], type="tram",
+                                 distance=distance(stations[i], stations[i+1]))
+            metro_graph.add_edge(stations[i + 1], stations[i], type="tram",
+                                 distance=distance(stations[i], stations[i+1]))
 
-    stations.sort(key = lambda s : (s.name,s.line))
+    stations.sort(key=lambda s: (s.name, s.line))
 
     for i in range(len(stations) - 1):
         if stations[i].name == stations[i + 1].name:
-            metro_graph.add_edge(stations[i], stations[i + 1], type = "enllaç",
-                                 distance = distance(stations[i],stations[i+1]))
-            metro_graph.add_edge(stations[i + 1], stations[i], type = "enllaç",
-                                 distance = distance(stations[i],stations[i+1]))
+            metro_graph.add_edge(stations[i], stations[i + 1], type="enllaç",
+                                 distance=distance(stations[i], stations[i+1]))
+            metro_graph.add_edge(stations[i + 1], stations[i], type="enllaç",
+                                 distance=distance(stations[i], stations[i+1]))
 
     stations_dict = {}
     for s in stations:
         stations_dict[s.name] = s
     for a in accesses:
-        metro_graph.add_edge(a, stations_dict[a.name_station], type = "acces",
-                        distance = distance(a,stations_dict[a.name_station]))
-        metro_graph.add_edge(stations_dict[a.name_station], a, type = "acces",
-                        distance = distance(a,stations_dict[a.name_station]))
+        metro_graph.add_edge(a, stations_dict[a.name_station], type="acces",
+                             distance=distance(a, stations_dict[a.name_station]))
+        metro_graph.add_edge(stations_dict[a.name_station], a, type="acces",
+                             distance=distance(a, stations_dict[a.name_station]))
 
     return metro_graph
+
 
 def read_stations() -> Stations:
     """
@@ -59,14 +61,15 @@ def read_stations() -> Stations:
         stations = []
         for i in range(dim[0]):
             id = csv_stations.iloc[i, 5]
-            name = csv_stations.iloc[i,7]
-            order = csv_stations.iloc[i,8]
-            line = csv_stations.iloc[i,11]
-            pos = tuple(map(float,csv_stations.iloc[i,26][7:-1].split()))
-            stations.append(Station(id,name,order,line,pos))
+            name = csv_stations.iloc[i, 7]
+            order = csv_stations.iloc[i, 8]
+            line = csv_stations.iloc[i, 11]
+            pos = tuple(map(float, csv_stations.iloc[i, 26][7:-1].split()))
+            stations.append(Station(id, name, order, line, pos))
         return stations
-    except:
+    except Exception:
         sys.exit("We cannot find data/estacions.csv, please add it in")
+
 
 def read_accesses() -> Accesses:
     """
@@ -79,14 +82,16 @@ def read_accesses() -> Accesses:
         accesses = []
         for i in range(dim[0]):
             ides = csv_accesses.iloc[i, 1]
-            name = csv_accesses.iloc[i,3]
-            accessibility = csv_accesses.iloc[i,8] == "Accessible"
-            name_station = csv_accesses.iloc[i,6]
-            pos = tuple(map(float,csv_accesses.iloc[i,-1][7:-1].split()))
-            accesses.append(Access(ides, name,accessibility,name_station,pos))
+            name = csv_accesses.iloc[i, 3]
+            accessibility = csv_accesses.iloc[i, 8] == "Accessible"
+            name_station = csv_accesses.iloc[i, 6]
+            pos = tuple(map(float, csv_accesses.iloc[i, -1][7:-1].split()))
+            accesses.append(
+                Access(ides, name, accessibility, name_station, pos))
         return accesses
-    except:
+    except Exception:
         sys.exit("We cannot find data/accessos.csv, please add it in")
+
 
 def show(g: MetroGraph) -> None:
     """
@@ -97,8 +102,9 @@ def show(g: MetroGraph) -> None:
     positions = {}
     for n in nx.nodes(g):
         positions[n] = n.pos
-    nx.draw_networkx(g,pos = positions, node_size = 10, with_labels = False)
+    nx.draw_networkx(g, pos=positions, node_size=10, with_labels=False)
     plt.show()
+
 
 def plot(g: MetroGraph, filename: str) -> None:
     """

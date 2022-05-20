@@ -5,7 +5,7 @@ velocity = {
     "acces": 1
 }
 colour = {
-    "other" : "black",
+    "other": "black",
     "L1": "red",
     "L2": "darkviolet",
     "L3": "green",
