@@ -132,6 +132,3 @@ def logic_search(logic_query: str, restaurants: Restaurants) -> Optional[Restaur
         parsed_entry.remove('')
     if len(parsed_entry) != 0:
         return list(search(parsed_entry, 0))
-
-
-print(logic_search('and(sarria,hamburg)', read()))
