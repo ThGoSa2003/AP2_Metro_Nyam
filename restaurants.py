@@ -64,6 +64,9 @@ class Restaurant:
                 return True
         return False
 
+    def __hash__(self):
+        return hash(self.register_id)
+
 
 Restaurants: TypeAlias = List[Restaurant]
 
@@ -94,7 +97,7 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
     return [r for r in restaurants if r.contains(query)]
 
 
-def logic_search(logic_query: str, restaurants: Restaurants) -> Restaurants:
+def logic_search(logic_query: str, restaurants: Restaurants) -> Optional[Restaurants]:
     def parsing(l: List[str], order: str) -> List[str]:
         parsed_entry = []
         for i_l in l:
@@ -102,16 +105,23 @@ def logic_search(logic_query: str, restaurants: Restaurants) -> Restaurants:
             for s in inner_text:
                 parsed_entry.append(s)
         return parsed_entry
-    def search(l: List[str], order: str) -> L
+
+    def search(l: List[str], i: int) -> set[Restaurant]:
+        if(l[i] == 'or'):
+            return search(l, i + 1).union(search(l, i + 2))
+        elif(l[i] == 'and'):
+            return search(l, i + 1).intersection(search(l, i + 2))
+        elif(l[i] == 'not'):
+            return {r for r in restaurants if not r.contains(l[i + 1])}
+        else:
+            return {r for r in restaurants if r.contains(l[i])}
 
     parsed_entry = parsing(logic_query.split('('), ')')
     parsed_entry = parsing(parsed_entry.copy(), ',')
     while '' in parsed_entry:
         parsed_entry.remove('')
     if len(parsed_entry) != 0:
-        return search(parsed_entry,parsed_entry[0])
-    
-    print(parsed_entry)
+        return list(search(parsed_entry, 0))
 
 
-logic_search('and(or(pizz,hamburg),and(sants,barat))', [])
+print(logic_search('and(or(pizz,hamburg),and(sants,barat))', read()))
