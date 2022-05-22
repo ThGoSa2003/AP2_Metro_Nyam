@@ -94,14 +94,19 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
     return [r for r in restaurants if r.contains(query)]
 
 
-def logic_search(logic_query: str, restaurants: Restaurant) -> Restaurants:
-    buff = 'and(or(pizz,hamburg),and(sants,barat))'
-    buff = buff.split('(')
-    parsed_entry = []
-    for i_b in buff:
-        inner_text = i_b.split(')')
-        for s in inner_text:
-            parsed_entry.append(s)
+def logic_search(logic_query: str, restaurants: Restaurants) -> Restaurants:
+    def parsing(l: List[str], order: str) -> List[str]:
+        parsed_entry = []
+        for i_l in l:
+            inner_text = i_l.split(order)
+            for s in inner_text:
+                parsed_entry.append(s)
+        return parsed_entry
+
+    parsed_entry = parsing(logic_query.split('('), ')')
+    parsed_entry = parsing(parsed_entry.copy(), ',')
+    while '' in parsed_entry:
+        parsed_entry.remove('')
     print(parsed_entry)
 
-logic_search('f',[])
+logic_search('and(or(pizz,hamburg),and(sants,barat))',[])
