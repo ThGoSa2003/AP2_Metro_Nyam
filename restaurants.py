@@ -60,7 +60,7 @@ class Restaurant:
         query = query.lower()
         for attribute, value in vars(self).items():
             v = str(value).lower()
-            if find_near_matches(query, v, max_l_dist = 1) != []:
+            if find_near_matches(query, v, max_l_dist=1) != []:
                 return True
         return False
 
@@ -102,11 +102,16 @@ def logic_search(logic_query: str, restaurants: Restaurants) -> Restaurants:
             for s in inner_text:
                 parsed_entry.append(s)
         return parsed_entry
+    def search(l: List[str], order: str) -> L
 
     parsed_entry = parsing(logic_query.split('('), ')')
     parsed_entry = parsing(parsed_entry.copy(), ',')
     while '' in parsed_entry:
         parsed_entry.remove('')
+    if len(parsed_entry) != 0:
+        return search(parsed_entry,parsed_entry[0])
+    
     print(parsed_entry)
 
-logic_search('and(or(pizz,hamburg),and(sants,barat))',[])
+
+logic_search('and(or(pizz,hamburg),and(sants,barat))', [])
