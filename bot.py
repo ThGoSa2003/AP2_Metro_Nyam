@@ -85,8 +85,8 @@ class Bot:
             return
         query = str(context.args[0])
         id = update.message.from_user.id  # id usuari
-        restaurants.find(query, self.all_restaurants)
-        self.res_list[id] = restaurants.find(query, self.all_restaurants)
+        self.res_list[id] = restaurants.logic_search(query,
+                                                     self.all_restaurants)
         if len(self.res_list) == 0:
             context.bot.send_message(
                 chat_id=update.effective_chat.id,
