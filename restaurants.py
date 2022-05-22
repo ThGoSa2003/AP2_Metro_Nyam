@@ -107,14 +107,24 @@ def logic_search(logic_query: str, restaurants: Restaurants) -> Optional[Restaur
         return parsed_entry
 
     def search(l: List[str], i: int) -> set[Restaurant]:
-        if(l[i] == 'or'):
-            return search(l, i + 1).union(search(l, i + 2))
-        elif(l[i] == 'and'):
-            return search(l, i + 1).intersection(search(l, i + 2))
-        elif(l[i] == 'not'):
-            return {r for r in restaurants if not r.contains(l[i + 1])}
-        else:
-            return {r for r in restaurants if r.contains(l[i])}
+        stack = list() # will be used as a stack
+        i = -1
+        while i >= -len(l):
+            if(l[i] == 'or'):
+                first = stack.pop()
+                second = stack.pop()
+                stack.append(first.union(second))
+            elif(l[i] == 'and'):
+                first = stack.pop()
+                second = stack.pop()
+                stack.append(first.intersection(second))
+            elif(l[i] == 'not'):
+                first = stack.pop()
+                stack.append({r for r in restaurants if not r.contains(l[i+1])})
+            else:
+                stack.append({r for r in restaurants if r.contains(l[i])})
+            i = i - 1
+        return stack.pop()
 
     parsed_entry = parsing(logic_query.split('('), ')')
     parsed_entry = parsing(parsed_entry.copy(), ',')
@@ -124,4 +134,4 @@ def logic_search(logic_query: str, restaurants: Restaurants) -> Optional[Restaur
         return list(search(parsed_entry, 0))
 
 
-print(logic_search('and(or(pizz,hamburg),and(sants,barat))', read()))
+print(logic_search('and(sarria,hamburg)', read()))
