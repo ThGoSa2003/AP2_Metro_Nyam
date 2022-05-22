@@ -57,17 +57,6 @@ class Restaurant:
         :param query: a word that you want to serch in the restaurants
         :returns: whether if query is in any of the attributes
         """
-
-        for attribute, value in vars(self).items():
-            if query.lower() in str(value).lower():
-                return True
-        return False
-
-    def contains(self, query: str) -> bool:
-        """
-        :param query: a word that you want to serch in the restaurants
-        :returns: whether if query is in any of the attributes
-        """
         query = query.lower()
         for attribute, value in vars(self).items():
             v = str(value).lower()
