@@ -60,9 +60,12 @@ class Restaurant:
         query = query.lower()
         for attribute, value in vars(self).items():
             v = str(value).lower()
-            if find_near_matches(query, v, max_l_dist = 1) != []:
+            if find_near_matches(query, v, max_l_dist=1) != []:
                 return True
         return False
+
+    def __hash__(self):
+        return hash(self.register_id)
 
 
 Restaurants: TypeAlias = List[Restaurant]
@@ -94,7 +97,7 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
     return [r for r in restaurants if r.contains(query)]
 
 
-def logic_search(logic_query: str, restaurants: Restaurants) -> Restaurants:
+def logic_search(logic_query: str, restaurants: Restaurants) -> Optional[Restaurants]:
     def parsing(l: List[str], order: str) -> List[str]:
         parsed_entry = []
         for i_l in l:
@@ -103,10 +106,32 @@ def logic_search(logic_query: str, restaurants: Restaurants) -> Restaurants:
                 parsed_entry.append(s)
         return parsed_entry
 
+    def search(l: List[str], i: int) -> set[Restaurant]:
+        stack = list() # will be used as a stack
+        i = -1
+        while i >= -len(l):
+            if(l[i] == 'or'):
+                first = stack.pop()
+                second = stack.pop()
+                stack.append(first.union(second))
+            elif(l[i] == 'and'):
+                first = stack.pop()
+                second = stack.pop()
+                stack.append(first.intersection(second))
+            elif(l[i] == 'not'):
+                first = stack.pop()
+                stack.append({r for r in restaurants if not r.contains(l[i+1])})
+            else:
+                stack.append({r for r in restaurants if r.contains(l[i])})
+            i = i - 1
+        return stack.pop()
+
     parsed_entry = parsing(logic_query.split('('), ')')
     parsed_entry = parsing(parsed_entry.copy(), ',')
     while '' in parsed_entry:
         parsed_entry.remove('')
-    print(parsed_entry)
+    if len(parsed_entry) != 0:
+        return list(search(parsed_entry, 0))
 
-logic_search('and(or(pizz,hamburg),and(sants,barat))',[])
+
+print(logic_search('and(sarria,hamburg)', read()))
