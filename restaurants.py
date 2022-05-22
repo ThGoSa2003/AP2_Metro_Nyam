@@ -106,9 +106,13 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
 
 
 def logic_search(logic_query: str, restaurants: Restaurant) -> Restaurants:
-    a = 'and(or(pizz,hamburg),and(sants,barat))'
-    a = a.split('(')
-    a =[i.split(')') for i in a]
-    print(a)
+    buff = 'and(or(pizz,hamburg),and(sants,barat))'
+    buff = buff.split('(')
+    parsed_entry = []
+    for i_b in buff:
+        inner_text = i_b.split(')')
+        for s in inner_text:
+            parsed_entry.append(s)
+    print(parsed_entry)
 
 logic_search('f',[])
