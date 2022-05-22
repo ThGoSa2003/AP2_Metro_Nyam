@@ -85,9 +85,10 @@ class Bot:
             return
         query = str(context.args[0])
         id = update.message.from_user.id  # id usuari
-        self.res_list[id] = restaurants.logic_search(query,
-                                                     self.all_restaurants)
-        if len(self.res_list) == 0:
+        self.res_list[id] = restaurants.find(query,
+                                             self.all_restaurants)
+
+        if len(self.res_list[id]) == 0:
             context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text="No hem trobat cap restaurant amb aquest filtre.")
@@ -139,6 +140,11 @@ class Bot:
         if id not in self.res_list.keys():
             txt = "Has de buscar restaurants amb la comanda /find <query> "
             txt += "abans de buscar la informació d'algun restaurant."
+            context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=txt)
+        elif id not in self.coord.keys():
+            txt = "Has de compartir la teva ubicació si vols que pugui guiarte"
             context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text=txt)

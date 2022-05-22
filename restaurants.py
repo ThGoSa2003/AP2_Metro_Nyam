@@ -94,10 +94,6 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
     :returns: a list of the restaurants that contain query in any field
     """
 
-    return [r for r in restaurants if r.contains(query)]
-
-
-def logic_search(logic_query: str, restaurants: Restaurants) -> Optional[Restaurants]:
     def parsing(l: List[str], order: str) -> List[str]:
         parsed_entry = []
         for i_l in l:
@@ -107,7 +103,7 @@ def logic_search(logic_query: str, restaurants: Restaurants) -> Optional[Restaur
         return parsed_entry
 
     def search(l: List[str], i: int) -> set[Restaurant]:
-        stack = list() # will be used as a stack
+        stack = list()  # will be used as a stack
         i = -1
         while i >= -len(l):
             if(l[i] == 'or'):
@@ -120,13 +116,14 @@ def logic_search(logic_query: str, restaurants: Restaurants) -> Optional[Restaur
                 stack.append(first.intersection(second))
             elif(l[i] == 'not'):
                 first = stack.pop()
-                stack.append({r for r in restaurants if not r.contains(l[i+1])})
+                stack.append(
+                    {r for r in restaurants if not r.contains(l[i+1])})
             else:
                 stack.append({r for r in restaurants if r.contains(l[i])})
             i = i - 1
         return stack.pop()
 
-    parsed_entry = parsing(logic_query.split('('), ')')
+    parsed_entry = parsing(query.split('('), ')')
     parsed_entry = parsing(parsed_entry.copy(), ',')
     while '' in parsed_entry:
         parsed_entry.remove('')

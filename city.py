@@ -187,7 +187,7 @@ def plot_path(g: CityGraph, p: Path, filename: str) -> None:
 
     map = staticmap.StaticMap(ct.resolution_x, ct.resolution_y)
     for i in range(len(p) - 1):
-        if type(p[i]) == Station and type(p[i+1]) == Station:
+        if type(p[i]) == Station and type(p[i+1]) == Station and p[i].line == p[i+1].line:
             map.add_line(staticmap.Line((p[i].pos, p[i + 1].pos),
                                         ct.colour[p[i].line], 3))
         else:
