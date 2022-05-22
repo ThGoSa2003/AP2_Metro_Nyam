@@ -90,3 +90,12 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
     """
 
     return [r for r in restaurants if r.contains(query)]
+
+
+def logic_search(logic_query: str, restaurants: Restaurant) -> Restaurants:
+    a = 'and(or(pizz,hamburg),and(sants,barat))'
+    a = a.split('(')
+    a =[i.split(')') for i in a]
+    print(a)
+
+logic_search('f',[])
