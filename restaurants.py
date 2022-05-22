@@ -4,6 +4,7 @@ import pandas as pd
 from dataclasses import *
 from typing import Optional, List
 from typing_extensions import TypeAlias
+from fuzzysearch import find_near_matches
 
 
 @dataclass
@@ -59,6 +60,18 @@ class Restaurant:
 
         for attribute, value in vars(self).items():
             if query.lower() in str(value).lower():
+                return True
+        return False
+
+    def contains(self, query: str) -> bool:
+        """
+        :param query: a word that you want to serch in the restaurants
+        :returns: whether if query is in any of the attributes
+        """
+        query = query.lower()
+        for attribute, value in vars(self).items():
+            v = str(value).lower()
+            if find_near_matches(query, v, max_l_dist = 1) != []:
                 return True
         return False
 
