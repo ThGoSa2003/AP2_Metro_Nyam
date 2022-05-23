@@ -2,7 +2,7 @@ Per obtenir les rutes als restaurants ens hauràs de compartir la teva localitza
 
 /author: mostra el nom dels autors del programa.
 
-/find <query>: Cerca quins restaurants satisfan la cerca i n'escriu una llista numerada (12 elements com a molt). Per exemple: /find pizza. /find and(pizza,sarria) /find or(kebab,piza) /find not(pizza). Avis: si dintre de les cerques llogiques es posa un espai en qualsevol lloc el missatge es perd
+/find <query>: Cerca quins restaurants satisfan la cerca i n'escriu una llista numerada (12 elements com a molt). Per exemple: /find pizza. /find and(pizza,sarria) /find or(kebab,piza) /find not(pizza).
 
 
 /info <numero>: mostra la informació sobre el restaurant especificat pel seu número (triat de la darrera llista numerada obtinguda amb /find).

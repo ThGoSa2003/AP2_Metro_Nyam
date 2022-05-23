@@ -83,7 +83,9 @@ class Bot:
         """
         if len(context.args) == 0:
             return
-        query = str(context.args[0])
+        query = ''
+        for a in context.args:
+            query += a
         id = update.message.from_user.id  # id usuari
         self.res_list[id] = restaurants.find(query,
                                              self.all_restaurants)

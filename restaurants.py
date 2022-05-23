@@ -104,6 +104,7 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
 
     def search(l: List[str], i: int) -> set[Restaurant]:
         stack = list()  # will be used as a stack
+        total = set(restaurants)
         i = -1
         while i >= -len(l):
             if(l[i] == 'or'):
@@ -117,7 +118,7 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
             elif(l[i] == 'not'):
                 first = stack.pop()
                 stack.append(
-                    {r for r in restaurants if not r.contains(l[i+1])})
+                    total.difference(first))
             else:
                 stack.append({r for r in restaurants if r.contains(l[i])})
             i = i - 1
