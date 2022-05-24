@@ -1,13 +1,20 @@
-import pandas as pd
 import fuzzysearch
+import sys
+import pandas as pd
 from dataclasses import *
 from typing import Optional, List
+from typing_extensions import TypeAlias
+from fuzzysearch import find_near_matches
+
 
 @dataclass
 class Restaurant:
     """
-    Implementation of the Restaurant class.
+    This class represents a restaurant of the city of Barcelona
+
+    All the atributes from the csv will be added to this class
     """
+
     register_id: int
     name: str
     institution_id: Optional[int]
@@ -41,39 +48,85 @@ class Restaurant:
     secondary_filters_tree: int
     secondary_filters_asia_id: int
     geo_epgs_25831_x: float
-    geo_epgs_25831_y: int
+    geo_epgs_25831_y: float
     geo_epgs_4326_x: float
     geo_epgs_4326_y: float
 
     def contains(self, query: str) -> bool:
         """
-        Returns whether the restaurant contains a given word "query" in any
-        of its attributes.
+        :param query: a word that you want to serch in the restaurants
+        :returns: whether if query is in any of the attributes
         """
-
+        query = query.lower()
         for attribute, value in vars(self).items():
-            if query.lower() in str(value).lower():
+            v = str(value).lower()
+            if find_near_matches(query, v, max_l_dist=1) != []:
                 return True
         return False
 
-Restaurants = List[Restaurant]
+    def __hash__(self):
+        return hash(self.register_id)
+
+
+Restaurants: TypeAlias = List[Restaurant]
 
 
 def read() -> Restaurants:
     """
-    This function will read from resturants csv into a list of restaurants.
+    :returns: a list of the restaurants of Barcelona
     """
-    csv_restaurants = pd.read_csv('https://raw.githubusercontent.com/jordi-petit/ap2-metro-nyam-2022/main/data/restaurants.csv')
-    dim = csv_restaurants.shape
-    restaurants = []
-    for i in range(dim[0]):
-        restaurants.append(Restaurant(*[j for j in csv_restaurants.iloc[i,:]]))
-    return restaurants
+
+    try:
+        csv_res = pd.read_csv('./data/restaurants.csv')
+        dim = csv_res.shape
+        restaurants = []
+        for i in range(dim[0]):
+            restaurants.append(Restaurant(*[j for j in csv_res.iloc[i, :]]))
+        return restaurants
+    except Exception:
+        sys.exit("I cannot find the data/restaurants.csv, please add it in it")
+
 
 def find(query: str, restaurants: Restaurants) -> Restaurants:
     """
-    Given a word "query", return the list of restaurants with that word in
-    any of its attributes.
+    :param restaurants: a list of restaurants
+    :param query: a word you want to serch for in the restaurants
+    :returns: a list of the restaurants that contain query in any field
     """
 
-    return [restaurant for restaurant in restaurants if restaurant.contains(query)]
+    def parsing(l: List[str], order: str) -> List[str]:
+        parsed_entry = []
+        for i_l in l:
+            inner_text = i_l.split(order)
+            for s in inner_text:
+                parsed_entry.append(s)
+        return parsed_entry
+
+    def search(l: List[str], i: int) -> set[Restaurant]:
+        stack = list()  # will be used as a stack
+        total = set(restaurants)
+        i = -1
+        while i >= -len(l):
+            if(l[i] == 'or'):
+                first = stack.pop()
+                second = stack.pop()
+                stack.append(first.union(second))
+            elif(l[i] == 'and'):
+                first = stack.pop()
+                second = stack.pop()
+                stack.append(first.intersection(second))
+            elif(l[i] == 'not'):
+                first = stack.pop()
+                stack.append(
+                    total.difference(first))
+            else:
+                stack.append({r for r in restaurants if r.contains(l[i])})
+            i = i - 1
+        return stack.pop()
+
+    parsed_entry = parsing(query.split('('), ')')
+    parsed_entry = parsing(parsed_entry.copy(), ',')
+    while '' in parsed_entry:
+        parsed_entry.remove('')
+    if len(parsed_entry) != 0:
+        return list(search(parsed_entry, 0))

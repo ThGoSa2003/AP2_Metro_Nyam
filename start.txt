@@ -1,0 +1,1 @@
+Hola! Soc un bot per trobar la ruta més ràpida al restaurant que vulguis de Barcelona. Fes servir /help per obtenir informació sobre les comandes que puc executar, i comparteix la teva localització amb el bot per tal de poder començar aquesta aventura.

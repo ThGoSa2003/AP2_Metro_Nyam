@@ -5,3 +5,8 @@ staticmap
 python-telegram-bot
 pandas
 fuzzysearch
+sys
+typing
+dataclasses
+matplotlib
+os
