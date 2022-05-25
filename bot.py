@@ -11,13 +11,16 @@ import os
 
 
 class Bot:
+    """This class represents the Bot."""
     st_graph: TypeAlias = city.OsmnxGraph
     city_graph: TypeAlias = city.CityGraph
     all_restaurants: TypeAlias = restaurants.Restaurants
-    res_list: TypeAlias = Dict[int, restaurants.Restaurants]
-    coord: TypeAlias = Dict[int, List[int]]  # (latitude, longitude)
+    res_list: TypeAlias = Dict[int, restaurants.Restaurants] 
+    #user_id: [Restaurants]
+    coord: TypeAlias = Dict[int, List[int]]  #user_id: (longitude, latitude)
 
     def __init__(self) -> None:
+        """Initilization of the bot instance."""
         self.st_graph = city.load_osmnx_graph("graph.gpickle")
         self.city_graph = city.load_city_graph("graph.gpickle",
                                                "city_graph.gpickle")
@@ -26,22 +29,22 @@ class Bot:
         self.coord = {}
 
     def start(self, update, context) -> None:
-        """Escriu el missatge inicial del bot."""
+        """It writes the first message of the conversation."""
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=open("start.txt").read())
 
     def help(self, update, context) -> None:
         """
-        Escriu l'especificació de totes les comandes que l'usuari pot
-        utilitzar amb el bot.
+        It writes the specification of all the commands that are 
+        available for the user.
         """
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=open("help.txt").read())
 
     def update_location(self, update, context) -> None:
-        """Guarda la localització de l'usuari quan aquest la comparteix."""
+        """It saves the user's location when he/she sends it."""
         id = update.message.from_user.id  # id usuari
         self.coord[id] = [0, 0]
         self.coord[id][0] = update.message['location']['longitude']
@@ -49,8 +52,7 @@ class Bot:
 
     def get_location(self, update, context) -> None:
         """
-        Escriu les coordenades de la ubicació des de la qual es traçaran
-        les rutes.
+        It writes the coordinates from which the routes will be calculated.
         """
         id = update.message.from_user.id  # id usuari
         if id not in self.coord.keys():
@@ -68,9 +70,7 @@ class Bot:
                 text=txt)
 
     def author(self, update, context):
-        """
-        Escriu qui ha fet el programa.
-        """
+        """ It writes the authors of the program."""
         txt = "Aquest programa està fet per Oriol López i Thomas González."
         context.bot.send_message(
             chat_id=update.effective_chat.id,
@@ -78,8 +78,8 @@ class Bot:
 
     def find(self, update, context):
         """
-        Donada una paraula per filtrar, escriu tots els restaurants de Barcelona
-        amb la paraula a algun camp seu (nom, descripció, ubicació etc.)
+        Given a query entry in the user context, write some restaurants (up to 
+        12) which have this word in any of its attribues.
         """
         if len(context.args) == 0:
             return
@@ -107,8 +107,8 @@ class Bot:
 
     def info(self, update, context):
         """
-        Donat el número del restaurant a la llista de la última cerca,
-        escriu tota la seva informació.
+        Given the number of the restaurant in the last list obtained with the 
+        find command, write all its information.
         """
         id = update.message.from_user.id  # id usuari
         if id not in self.res_list.keys():
@@ -135,8 +135,9 @@ class Bot:
 
     def guide(self, update, context):
         """
-        Donat el número del restaurant a la llista de la última cerca,
-        mostra a pantalla un mapa de com arribar-hi.
+        Given the number of the restaurant in the last list obtained with the 
+        find command, show in the map how to arrive to it from the user's 
+        location..
         """
         id = update.message.from_user.id  # id usuari
         if id not in self.res_list.keys():
@@ -163,8 +164,10 @@ class Bot:
                 res_long = restaurant.geo_epgs_4326_y
                 res_lat = restaurant.geo_epgs_4326_x
                 restaurant_pos = (res_long, res_lat)
-                city.plot_path(self.city_graph, city.find_path(self.st_graph,
-                                                               self.city_graph, self.coord[id], restaurant_pos),
+                city.plot_path(self.city_graph, 
+                               city.find_path(self.st_graph,
+                                              self.city_graph, self.coord[id], 
+                                              restaurant_pos),
                                "path" + str(id) + ".png")
                 context.bot.send_photo(
                     chat_id=update.effective_chat.id,
@@ -173,10 +176,7 @@ class Bot:
 
 
 def main():
-    """
-    Crea un bot de telegram que permet trobar i arribar a restaurants
-    de Barcelona.
-    """
+    """Deploy the bot in telegram."""
     token = ""
     try:
         token = open('token.txt').read().strip()
