@@ -103,7 +103,7 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
         return parsed_entry
 
     def search(l: List[str], i: int) -> set[Restaurant]:
-        stack = list()  # will be used as a stack
+        stack = []  # will be used as a stack
         total = set(restaurants)
         i = -1
         while i >= -len(l):
@@ -130,3 +130,4 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
         parsed_entry.remove('')
     if len(parsed_entry) != 0:
         return list(search(parsed_entry, 0))
+    return []
