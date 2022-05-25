@@ -60,7 +60,7 @@ def read_stations() -> Stations:
         dim = csv_stations.shape
         stations = []
         for i in range(dim[0]):
-            id = csv_stations.iloc[i, 5]
+            id = csv_stations.iloc[i, 1]
             name = csv_stations.iloc[i, 7]
             order = csv_stations.iloc[i, 8]
             line = csv_stations.iloc[i, 11]
