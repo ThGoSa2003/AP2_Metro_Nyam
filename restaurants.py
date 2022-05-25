@@ -77,7 +77,7 @@ def read() -> Restaurants:
     """
 
     try:
-        csv_res = pd.read_csv('./data/restaurants.csv')
+        csv_res = pd.read_csv('./restaurants.csv')
         dim = csv_res.shape
         restaurants = []
         for i in range(dim[0]):

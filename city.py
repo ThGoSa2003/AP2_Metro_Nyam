@@ -115,8 +115,8 @@ def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Position, dst: Position) -> P
     """
     :param ox_g: a graph of the streets of the city.
     :param g: a graph of the city
-    :src: the starting node.
-    :dst: the enging node.
+    :param src: the starting node.
+    :param dst: the enging node.
     :returns: the shortest path from src to dst.
     """
 

@@ -56,7 +56,7 @@ def read_stations() -> Stations:
     """
 
     try:
-        csv_stations = pd.read_csv('./data/estacions.csv')
+        csv_stations = pd.read_csv('./estacions.csv')
         dim = csv_stations.shape
         stations = []
         for i in range(dim[0]):
@@ -77,7 +77,7 @@ def read_accesses() -> Accesses:
     """
 
     try:
-        csv_accesses = pd.read_csv('./data/accessos.csv')
+        csv_accesses = pd.read_csv('./accessos.csv')
         dim = csv_accesses.shape
         accesses = []
         for i in range(dim[0]):
