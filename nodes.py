@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing_extensions import TypeAlias
 from typing import Union, List, Tuple
+import sys
 
 Position: TypeAlias = Tuple[float, float]
 
@@ -53,7 +54,7 @@ class Access:
 Stations: TypeAlias = List[Station]
 Accesses: TypeAlias = List[Access]
 
-Node: TypeAlias = Union[Access, Station, St_node, None]
+Node: TypeAlias = Union[Access, Station, St_node]
 Path: TypeAlias = List[Node]
 
 
