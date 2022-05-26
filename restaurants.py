@@ -94,28 +94,28 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
     :returns: a list of the restaurants that contain query in any field
     """
 
-    def parsing(l: List[str], order: str) -> List[str]:
+    def parsing(line: List[str], order: str) -> List[str]:
         parsed_entry = []
-        for i_l in l:
+        for i_l in line:
             inner_text = i_l.split(order)
             for s in inner_text:
                 parsed_entry.append(s)
         return parsed_entry
 
-    def search(l: List[str], i: int) -> set[Restaurant]:
+    def search(line: List[str], i: int) -> set[Restaurant]:
         stack = []  # will be used as a stack
         total = set(restaurants)
         i = -1
         while i >= -len(l):
-            if(l[i] == 'or'):
+            if(line[i] == 'or'):
                 first = stack.pop()
                 second = stack.pop()
                 stack.append(first.union(second))
-            elif(l[i] == 'and'):
+            elif(line[i] == 'and'):
                 first = stack.pop()
                 second = stack.pop()
                 stack.append(first.intersection(second))
-            elif(l[i] == 'not'):
+            elif(line[i] == 'not'):
                 first = stack.pop()
                 stack.append(
                     total.difference(first))

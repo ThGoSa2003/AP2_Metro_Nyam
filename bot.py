@@ -1,13 +1,12 @@
-import os
-import sys
 import restaurants
 import city
-from nodes import *
 from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext.filters import Filters
 from typing_extensions import TypeAlias
 from typing import Dict, List
 import os
+import sys
+from nodes import *
 
 
 class Bot:
@@ -16,8 +15,8 @@ class Bot:
     city_graph: TypeAlias = city.CityGraph
     all_restaurants: TypeAlias = restaurants.Restaurants
     res_list: TypeAlias = Dict[int, restaurants.Restaurants] 
-    #user_id: [Restaurants]
-    coord: TypeAlias = Dict[int, List[int]]  #user_id: (longitude, latitude)
+    # user_id: [Restaurants]
+    coord: TypeAlias = Dict[int, List[int]]  # user_id: (longitude, latitude)
 
     def __init__(self) -> None:
         """Initilization of the bot instance."""

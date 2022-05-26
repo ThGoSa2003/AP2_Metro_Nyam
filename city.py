@@ -1,13 +1,10 @@
 from matplotlib import pyplot as plt
 import networkx
 import osmnx as ox
-import haversine
-import pandas as pd
 import staticmap
 import constants as ct
 from metro import Position, get_metro_graph, MetroGraph
 import os
-from typing import Dict
 from nodes import *
 
 CityGraph: TypeAlias = networkx.Graph
@@ -84,7 +81,7 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
     city_graph.add_nodes_from(st_nodes)
 
     for edge_n_attribute in g1.edges.data():
-        if(edge_n_attribute[0] != edge_n_attribute[1]):
+        if edge_n_attribute[0] != edge_n_attribute[1]:
             node1 = st_nodes_dict[edge_n_attribute[0]]
             node2 = st_nodes_dict[edge_n_attribute[1]]
             if 'name' in edge_n_attribute[2]:
@@ -157,24 +154,22 @@ def plot(g: CityGraph, filename: str) -> None:
     the colours will be different.
     """
 
-    map = staticmap.StaticMap(ct.resolution_x, ct.resolution_y)
+    city_map = staticmap.StaticMap(ct.resolution_x, ct.resolution_y)
     for node in g.nodes:
         if type(node) == Station:
-            map.add_marker(staticmap.CircleMarker(node.pos,
-                                                  ct.colour[node.line],
-                                                  1))
+            city_map.add_marker(staticmap.CircleMarker(node.pos,
+                                                       ct.colour[node.line], 1))
         else:
-            map.add_marker(staticmap.CircleMarker(node.pos,
-                                                  ct.colour["other"],
-                                                  1))
+            city_map.add_marker(staticmap.CircleMarker(node.pos,
+                                                       ct.colour["other"], 1))
     for edge in g.edges.data():
         if edge[2]['type'] == 'tram':
-            map.add_line(staticmap.Line([edge[0].pos, edge[1].pos],
-                                        ct.colour[edge[0].line], 0))
+            city_map.add_line(staticmap.Line([edge[0].pos, edge[1].pos],
+                                             ct.colour[edge[0].line], 0))
         else:
-            map.add_line(staticmap.Line([edge[0].pos, edge[1].pos],
-                                        ct.colour["other"], 0))
-    image = map.render()
+            city_map.add_line(staticmap.Line([edge[0].pos, edge[1].pos],
+                                             ct.colour["other"], 0))
+    image = city_map.render()
     image.save(filename)
 
 
@@ -196,9 +191,11 @@ def plot_path(g: CityGraph, p: Path, filename: str) -> None:
     for node in p:
         if type(node) == Station:
             map.add_marker(staticmap.CircleMarker(node.pos,
-                                                  ct.colour[node.line], 10))
+                                                  ct.colour[node.line],
+                                                  10))
         else:
             map.add_marker(staticmap.CircleMarker(node.pos,
-                                                  ct.colour["other"], 10))
+                                                  ct.colour["other"],
+                                                  10))
     image = map.render()
     image.save(filename)

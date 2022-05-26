@@ -113,10 +113,10 @@ def plot(g: MetroGraph, filename: str) -> None:
     :effect: an image of g will be saved in filename
     """
 
-    map = staticmap.StaticMap(resolution_x, resolution_y)
+    metro_map = staticmap.StaticMap(resolution_x, resolution_y)
     for node in g.nodes:
-        map.add_marker(staticmap.CircleMarker(node.pos, "red", 10))
+        metro_map.add_marker(staticmap.CircleMarker(node.pos, "red", 10))
     for edge in g.edges:
-        map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], "blue", 5))
-    image = map.render()
+        metro_map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], "blue", 5))
+    image = metro_map.render()
     image.save(filename)
