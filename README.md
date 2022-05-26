@@ -5,7 +5,7 @@ The code was made by Oriol López Petit and Thomas González Saito. The implemen
 This is a bot of telegram that will give a user the path of a restaurant given a search of attributes and his/her
 location. To use this bot you need to start the module bot.py with python3 or later and the bot will be active. To identify the bot, the name Toni Montana and user t.me/NotAQuitterBot is needed. The conversation can be started using the /start command.
 
-##Getting started
+## Getting started
 
 In order to try this bot you need to have python3 and pip installed. If not:
 
@@ -18,7 +18,7 @@ sudo apt install python3
 
 if you use windows or mac use the installer given in the official website
 
-##Authors
+## Authors
 
 Oriol López Petit
 Thomas González Saito
