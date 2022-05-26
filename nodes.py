@@ -5,7 +5,6 @@ import sys
 
 Position: TypeAlias = Tuple[float, float]
 
-
 @dataclass
 class St_node:
     """

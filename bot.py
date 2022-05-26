@@ -2,10 +2,8 @@ import restaurants
 import city
 from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext.filters import Filters
-from typing_extensions import TypeAlias
-from typing import Dict, List
+from typing import Dict
 import os
-import sys
 from nodes import *
 
 
