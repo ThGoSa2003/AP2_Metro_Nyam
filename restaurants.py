@@ -1,4 +1,3 @@
-import fuzzysearch
 import sys
 import pandas as pd
 from dataclasses import *
@@ -102,11 +101,11 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
                 parsed_entry.append(s)
         return parsed_entry
 
-    def search(line: List[str], i: int) -> set[Restaurant]:
+    def search(line: List[str], i: int) -> Restaurants:
         stack = []  # will be used as a stack
         total = set(restaurants)
         i = -1
-        while i >= -len(l):
+        while i >= -len(line):
             if(line[i] == 'or'):
                 first = stack.pop()
                 second = stack.pop()
@@ -120,9 +119,9 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
                 stack.append(
                     total.difference(first))
             else:
-                stack.append({r for r in restaurants if r.contains(l[i])})
+                stack.append({r for r in restaurants if r.contains(line[i])})
             i = i - 1
-        return stack.pop()
+        return list(stack.pop())
 
     parsed_entry = parsing(query.split('('), ')')
     parsed_entry = parsing(parsed_entry.copy(), ',')

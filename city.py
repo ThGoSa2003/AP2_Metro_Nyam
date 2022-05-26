@@ -58,9 +58,7 @@ def load_city_graph(filename_osmnx: str, filename_city: str) -> CityGraph:
     """
 
     if not os.path.exists(filename_city):
-        save_city_graph(build_city_graph(load_osmnx_graph(filename_osmnx),
-                                         get_metro_graph()),
-                        filename_city)
+        save_city_graph(build_city_graph(load_osmnx_graph(filename_osmnx), get_metro_graph()), filename_city)
     return networkx.read_gpickle(filename_city)
 
 
