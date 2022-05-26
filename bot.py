@@ -13,7 +13,7 @@ class Bot:
     city_graph: TypeAlias = city.CityGraph
     all_restaurants: TypeAlias = restaurants.Restaurants
     res_list: TypeAlias = Dict[int, restaurants.Restaurants] 
-    # user_id: [Restaurants]
+    # user_id: Restaurants
     coord: TypeAlias = Dict[int, List[int]]
     # user_id: (longitude, latitude)
 
@@ -76,8 +76,8 @@ class Bot:
 
     def find(self, update, context):
         """
-        Given a query entry in the user context, write some restaurants (up to
-         12) which have this word in any of its attribues.
+        Given a logical query entry in the user context, write some
+        restaurants (up to 12) which gat through the filter.
         """
         if len(context.args) == 0:
             return
