@@ -58,7 +58,8 @@ def load_city_graph(filename_osmnx: str, filename_city: str) -> CityGraph:
     """
 
     if not os.path.exists(filename_city):
-        save_city_graph(build_city_graph(load_osmnx_graph(filename_osmnx), get_metro_graph()), filename_city)
+        save_city_graph(build_city_graph(load_osmnx_graph(filename_osmnx),
+                                         get_metro_graph()), filename_city)
     return networkx.read_gpickle(filename_city)
 
 
@@ -106,7 +107,8 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
     return city_graph
 
 
-def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Position, dst: Position) -> Path:
+def find_path(ox_g: OsmnxGraph, g: CityGraph,
+              src: Position, dst: Position) -> Path:
     """
     :param ox_g: a graph of the streets of the city.
     :param g: a graph of the city
@@ -156,7 +158,8 @@ def plot(g: CityGraph, filename: str) -> None:
     for node in g.nodes:
         if type(node) == Station:
             city_map.add_marker(staticmap.CircleMarker(node.pos,
-                                                       ct.colour[node.line], 1))
+                                                       ct.colour[node.line],
+                                                       1))
         else:
             city_map.add_marker(staticmap.CircleMarker(node.pos,
                                                        ct.colour["other"], 1))
@@ -180,7 +183,9 @@ def plot_path(g: CityGraph, p: Path, filename: str) -> None:
 
     map = staticmap.StaticMap(ct.resolution_x, ct.resolution_y)
     for i in range(len(p) - 1):
-        if type(p[i]) == Station and type(p[i+1]) == Station and p[i].line == p[i+1].line:
+        if type(p[i]) == Station and \
+                type(p[i+1]) == Station and \
+                p[i].line == p[i+1].line:
             map.add_line(staticmap.Line((p[i].pos, p[i + 1].pos),
                                         ct.colour[p[i].line], 3))
         else:

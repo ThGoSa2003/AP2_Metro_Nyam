@@ -83,7 +83,7 @@ def read() -> Restaurants:
             restaurants.append(Restaurant(*[j for j in csv_res.iloc[i, :]]))
         return restaurants
     except Exception:
-        sys.exit("I cannot find the data/restaurants.csv, please add it in it")
+        sys.exit("I can't find the data/restaurants.csv, please add it in it")
 
 
 def find(query: str, restaurants: Restaurants) -> Restaurants:

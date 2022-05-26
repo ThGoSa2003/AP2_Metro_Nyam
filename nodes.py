@@ -65,7 +65,8 @@ def distance(node1: Node, node2: Node) -> float:
     """
 
     try:
-        d = (node1.pos[0] - node2.pos[0])**2 + (node1.pos[1] - node2.pos[1])**2
+        d = (node1.pos[0] - node2.pos[0])**2 + \
+            (node1.pos[1] - node2.pos[1])**2
         return d**(1/2)
     except AttributeError:
         txt = "You tried to get the distance of a class that has "

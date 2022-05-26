@@ -16,7 +16,8 @@ class Bot:
     all_restaurants: TypeAlias = restaurants.Restaurants
     res_list: TypeAlias = Dict[int, restaurants.Restaurants] 
     # user_id: [Restaurants]
-    coord: TypeAlias = Dict[int, List[int]]  # user_id: (longitude, latitude)
+    coord: TypeAlias = Dict[int, List[int]]
+    # user_id: (longitude, latitude)
 
     def __init__(self) -> None:
         """Initilization of the bot instance."""
@@ -44,7 +45,7 @@ class Bot:
 
     def update_location(self, update, context) -> None:
         """It saves the user's location when he/she sends it."""
-        id = update.message.from_user.id  # id usuari
+        id = update.message.from_user.id  # user id
         self.coord[id] = [0, 0]
         self.coord[id][0] = update.message['location']['longitude']
         self.coord[id][1] = update.message['location']['latitude']
@@ -53,10 +54,10 @@ class Bot:
         """
         It writes the coordinates from which the routes will be calculated.
         """
-        id = update.message.from_user.id  # id usuari
+        id = update.message.from_user.id  # user id
         if id not in self.coord.keys():
-            txt = "No tenim la teva ubicació. Envia-la. Si ja l'has enviat pot"
-            txt += " tardar una estona en carregar."
+            txt = "No tenim la teva ubicació. Envia-la. Si ja l'has enviat"
+            txt += " pot tardar una estona en carregar."
             context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text=txt)
@@ -77,15 +78,15 @@ class Bot:
 
     def find(self, update, context):
         """
-        Given a query entry in the user context, write some restaurants (up to 
-        12) which have this word in any of its attribues.
+        Given a query entry in the user context, write some restaurants (up to
+         12) which have this word in any of its attribues.
         """
         if len(context.args) == 0:
             return
         query = ''
         for a in context.args:
             query += a
-        id = update.message.from_user.id  # id usuari
+        id = update.message.from_user.id  # user id
         self.res_list[id] = restaurants.find(query,
                                              self.all_restaurants)
 
@@ -109,16 +110,16 @@ class Bot:
         Given the number of the restaurant in the last list obtained with the 
         find command, write all its information.
         """
-        id = update.message.from_user.id  # id usuari
+        id = update.message.from_user.id  # user id
         if id not in self.res_list.keys():
-            txt = "Has de buscar restaurants amb la comanda /find <query> abans"
-            txt += " de buscar la informació d'algun restaurant."
+            txt = "Has de buscar restaurants amb la comanda /find <query>"
+            txt += " abans de buscar la informació d'algun restaurant."
             context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text=txt)
         else:
-            numero = int(context.args[0])
-            if numero < 0 or numero >= len(self.res_list[id]):
+            num = int(context.args[0])
+            if num < 0 or num >= len(self.res_list[id]):
                 txt = "El número de restaurant que has introduït no és a la "
                 txt += "llista de cerca més recent."
                 context.bot.send_message(
@@ -126,7 +127,7 @@ class Bot:
                     text=txt)
             else:
                 txt = ""
-                for attribute, value in vars(self.res_list[id][numero]).items():
+                for attribute, value in vars(self.res_list[id][num]).items():
                     txt += str(attribute) + ": " + str(value) + "\n"
                 context.bot.send_message(
                     chat_id=update.effective_chat.id,
@@ -138,7 +139,7 @@ class Bot:
         find command, show in the map how to arrive to it from the user's 
         location..
         """
-        id = update.message.from_user.id  # id usuari
+        id = update.message.from_user.id  # user id
         if id not in self.res_list.keys():
             txt = "Has de buscar restaurants amb la comanda /find <query> "
             txt += "abans de buscar la informació d'algun restaurant."
@@ -146,7 +147,8 @@ class Bot:
                 chat_id=update.effective_chat.id,
                 text=txt)
         elif id not in self.coord.keys():
-            txt = "Has de compartir la teva ubicació si vols que pugui guiarte"
+            txt = "Has de compartir la teva ubicació "
+            txt += "si vols que pugui guiar-te."
             context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text=txt)
@@ -165,7 +167,7 @@ class Bot:
                 restaurant_pos = (res_long, res_lat)
                 city.plot_path(self.city_graph, 
                                city.find_path(self.st_graph,
-                                              self.city_graph, self.coord[id], 
+                                              self.city_graph, self.coord[id],
                                               restaurant_pos),
                                "path" + str(id) + ".png")
                 context.bot.send_photo(

@@ -117,6 +117,7 @@ def plot(g: MetroGraph, filename: str) -> None:
     for node in g.nodes:
         metro_map.add_marker(staticmap.CircleMarker(node.pos, "red", 10))
     for edge in g.edges:
-        metro_map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], "blue", 5))
+        metro_map.add_line(staticmap.Line([edge[0].pos, edge[1].pos],
+                                          "blue", 5))
     image = metro_map.render()
     image.save(filename)
