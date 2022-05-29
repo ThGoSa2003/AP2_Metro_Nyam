@@ -5,7 +5,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from dataclasses import dataclass
 from typing_extensions import TypeAlias
-from typing import Union, List, Tuple
+from typing import List, Tuple
 from constants import resolution_x, resolution_y
 
 Position: TypeAlias = Tuple[float, float]

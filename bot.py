@@ -4,7 +4,8 @@ from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext.filters import Filters
 from typing import Dict
 import os
-from nodes import *
+from typing_extensions import TypeAlias
+from typing import Union, List, Tuple
 
 
 class Bot:
@@ -12,7 +13,7 @@ class Bot:
     st_graph: TypeAlias = city.OsmnxGraph
     city_graph: TypeAlias = city.CityGraph
     all_restaurants: TypeAlias = restaurants.Restaurants
-    res_list: TypeAlias = Dict[int, restaurants.Restaurants] 
+    res_list: TypeAlias = Dict[int, restaurants.Restaurants]
     # user_id: Restaurants
     coord: TypeAlias = Dict[int, List[int]]
     # user_id: (longitude, latitude)
@@ -34,7 +35,7 @@ class Bot:
 
     def help(self, update, context) -> None:
         """
-        It writes the specification of all the commands that are 
+        It writes the specification of all the commands that are
         available for the user.
         """
         context.bot.send_message(
@@ -105,7 +106,7 @@ class Bot:
 
     def info(self, update, context):
         """
-        Given the number of the restaurant in the last list obtained with the 
+        Given the number of the restaurant in the last list obtained with the
         find command, write all its information.
         """
         id = update.message.from_user.id  # user id
@@ -133,8 +134,8 @@ class Bot:
 
     def guide(self, update, context):
         """
-        Given the number of the restaurant in the last list obtained with the 
-        find command, show in the map how to arrive to it from the user's 
+        Given the number of the restaurant in the last list obtained with the
+        find command, show in the map how to arrive to it from the user's
         location..
         """
         id = update.message.from_user.id  # user id
@@ -163,7 +164,7 @@ class Bot:
                 res_long = restaurant.geo_epgs_4326_y
                 res_lat = restaurant.geo_epgs_4326_x
                 restaurant_pos = (res_long, res_lat)
-                city.plot_path(self.city_graph, 
+                city.plot_path(self.city_graph,
                                city.find_path(self.st_graph,
                                               self.city_graph, self.coord[id],
                                               restaurant_pos),
