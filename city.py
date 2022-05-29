@@ -4,11 +4,30 @@ import osmnx as ox
 import staticmap
 import constants as ct
 from metro import Position, get_metro_graph, MetroGraph
+from metro import Access, Station, distance
+from dataclasses import dataclass
+from typing_extensions import TypeAlias
+from typing import Union, List, Tuple
 import os
-from nodes import *
+
 
 CityGraph: TypeAlias = networkx.Graph
 OsmnxGraph: TypeAlias = networkx.MultiDiGraph
+
+@dataclass
+class St_node:
+    """
+    This represents a street node.
+    """
+
+    id: int
+    pos: Position
+
+    def __hash__(self):
+        return hash(self.id)
+
+Node: TypeAlias = Union[Access, Station, St_node]
+Path: TypeAlias = List[Node]
 
 
 def get_osmnx_graph() -> OsmnxGraph:
@@ -101,8 +120,8 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
             closest_st_node = ox.distance.nearest_nodes(g1, node[0].pos[0],
                                                         node[0].pos[1])
             city_graph.add_edge(node[0], st_nodes_dict[closest_st_node],
-                                type="walk", distance=distance(node[0],
-                                st_nodes_dict[closest_st_node]))
+                                type="walk", distance=distance(node[0].pos,
+                                st_nodes_dict[closest_st_node].pos))
 
     return city_graph
 

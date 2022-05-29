@@ -58,18 +58,18 @@ Node: TypeAlias = Union[Access, Station, St_node]
 Path: TypeAlias = List[Node]
 
 
-def distance(node1: Node, node2: Node) -> float:
+def distance(pos1: Position, pos2: Position) -> float:
     """
     :param node1, node2: any class with attribute pos (latitude and longitude)
     :returns: the euclidean distance between node1 node2
     """
 
     try:
-        d = (node1.pos[0] - node2.pos[0])**2 + \
-            (node1.pos[1] - node2.pos[1])**2
+        d = (pos1[0] - pos2[0])**2 + \
+            (pos1[1] - pos2[1])**2
         return d**(1/2)
     except AttributeError:
-        txt = "You tried to get the distance of a class that has "
-        txt += "no attribute pos."
+        txt = "You tried to get the distance between something "
+        txt += "that isn't a position."
         raise AttributeError(txt)
         sys.exit()
