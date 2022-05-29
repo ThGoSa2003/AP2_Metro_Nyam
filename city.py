@@ -14,6 +14,7 @@ import os
 CityGraph: TypeAlias = networkx.Graph
 OsmnxGraph: TypeAlias = networkx.MultiDiGraph
 
+
 @dataclass
 class St_node:
     """
@@ -25,6 +26,7 @@ class St_node:
 
     def __hash__(self):
         return hash(self.id)
+
 
 Node: TypeAlias = Union[Access, Station, St_node]
 Path: TypeAlias = List[Node]

@@ -12,6 +12,7 @@ Position: TypeAlias = Tuple[float, float]
 
 MetroGraph: TypeAlias = nx.Graph
 
+
 @dataclass
 class Station:
     """
@@ -26,6 +27,7 @@ class Station:
 
     def __hash__(self) -> int:
         return hash(self.id)
+
 
 @dataclass
 class Access:
@@ -46,6 +48,7 @@ class Access:
 Stations: TypeAlias = List[Station]
 Accesses: TypeAlias = List[Access]
 
+
 def distance(pos1: Position, pos2: Position) -> float:
     """
     :param node1, node2: any class with attribute pos (latitude and longitude)
@@ -61,6 +64,7 @@ def distance(pos1: Position, pos2: Position) -> float:
         txt += "that isn't a position."
         raise AttributeError(txt)
         sys.exit()
+
 
 def get_metro_graph() -> MetroGraph:
     """
