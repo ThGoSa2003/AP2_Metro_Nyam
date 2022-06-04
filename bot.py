@@ -6,6 +6,7 @@ from typing import Dict
 import os
 from typing_extensions import TypeAlias
 from typing import Union, List, Tuple
+from metro import Position
 
 
 class Bot:
@@ -15,7 +16,7 @@ class Bot:
     all_restaurants: TypeAlias = restaurants.Restaurants
     res_list: TypeAlias = Dict[int, restaurants.Restaurants]
     # user_id: Restaurants
-    coord: TypeAlias = Dict[int, List[int]]
+    coord: TypeAlias = Dict[int, Position]
     # user_id: (longitude, latitude)
 
     def __init__(self) -> None:
@@ -47,9 +48,9 @@ class Bot:
     def update_location(self, update, context) -> None:
         """It saves the user's location when he/she sends it."""
         id = update.message.from_user.id  # user id
-        self.coord[id] = [0, 0]
-        self.coord[id][0] = update.message['location']['longitude']
-        self.coord[id][1] = update.message['location']['latitude']
+        long = update.message['location']['longitude']
+        lat = update.message['location']['latitude']
+        self.coord[id] = (long, lat)
         print("Usuari", id, "ha actualitzat la seva ubicació")
 
     def get_location(self, update, context) -> None:

@@ -1,7 +1,7 @@
 import sys
 import pandas as pd
 from dataclasses import *
-from typing import Optional, List
+from typing import Optional, List, Set
 from typing_extensions import TypeAlias
 from fuzzysearch import find_near_matches
 
@@ -102,7 +102,7 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
         return parsed_entry
 
     def search(line: List[str], i: int) -> Restaurants:
-        stack = []  # will be used as a stack
+        stack: List[Set[Restaurant]] = []  # will be used as a stack
         total = set(restaurants)
         i = -1
         while i >= -len(line):
