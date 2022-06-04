@@ -32,6 +32,7 @@ class Bot:
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=open("start.txt").read())
+        print("Usuari", update.message.from_user.id, "ha fet /start")
 
     def help(self, update, context) -> None:
         """
@@ -41,6 +42,7 @@ class Bot:
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=open("help.txt").read())
+        print("Usuari", update.message.from_user.id, "ha fet /help")
 
     def update_location(self, update, context) -> None:
         """It saves the user's location when he/she sends it."""
@@ -48,6 +50,7 @@ class Bot:
         self.coord[id] = [0, 0]
         self.coord[id][0] = update.message['location']['longitude']
         self.coord[id][1] = update.message['location']['latitude']
+        print("Usuari", id, "ha actualitzat la seva ubicació")
 
     def get_location(self, update, context) -> None:
         """
@@ -67,6 +70,7 @@ class Bot:
             context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text=txt)
+        print("Usuari", id, "ha fet /get_location")
 
     def author(self, update, context):
         """ It writes the authors of the program."""
@@ -74,6 +78,7 @@ class Bot:
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=txt)
+        print("Usuari", update.message.from_user.id, "ha fet /author")
 
     def find(self, update, context):
         """
@@ -103,6 +108,7 @@ class Bot:
             context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text=txt)
+        print("Usuari", id, "ha fet /find")
 
     def info(self, update, context):
         """
@@ -125,12 +131,20 @@ class Bot:
                     chat_id=update.effective_chat.id,
                     text=txt)
             else:
-                txt = ""
-                for attribute, value in vars(self.res_list[id][num]).items():
-                    txt += str(attribute) + ": " + str(value) + "\n"
+                res = self.res_list[id][num]
+                txt = "Nom: " + str(res.name) + "\n"
+                txt += "Adreça: " + str(res.adresses_road_name)
+                if res.adresses_start_street_number is not None:
+                    txt += " " + str(int(res.adresses_start_street_number))
+                txt += "\n" + "Districte: "
+                txt += str(res.adresses_neighbourhood_name) + ", "
+                txt += str(res.adresses_district_name) + "\n"
+                txt += str(res.values_attribute_name) + str(res.values_value)
+
                 context.bot.send_message(
                     chat_id=update.effective_chat.id,
                     text=txt)
+        print("Usuari", id, "ha fet /info")
 
     def guide(self, update, context):
         """
@@ -173,6 +187,7 @@ class Bot:
                     chat_id=update.effective_chat.id,
                     photo=open("path" + str(id) + ".png", 'rb'))
                 os.remove("path" + str(id) + ".png")
+        print("Usuari", id, "ha fet /guide")
 
 
 def main():
@@ -198,6 +213,7 @@ def main():
     dispatcher.add_handler(CommandHandler('find', bot.find))
     dispatcher.add_handler(CommandHandler('info', bot.info))
     dispatcher.add_handler(CommandHandler('guide', bot.guide))
+    print("Bot iniciat")
     updater.start_polling()
     updater.idle()
 
