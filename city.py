@@ -7,7 +7,7 @@ from metro import Position, get_metro_graph, MetroGraph
 from metro import Access, Station, distance
 from dataclasses import dataclass
 from typing_extensions import TypeAlias
-from typing import Union, List, Tuple
+from typing import Union, List
 import os
 
 
@@ -88,7 +88,8 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
     """
     :param g1: a graph of the streets of a city
     :param g2: a graph of the metro of a city
-    :returns: a union of g1 and g2 that joins some of the accesses and street nodes
+    :returns: a union of g1 and g2 that joins some of the accesses and
+    street nodes
     :warning: nodes are stored as hashable classes
     """
 
@@ -199,6 +200,7 @@ def plot_path(g: CityGraph, p: Path, filename: str) -> None:
     """
     :param g: a graph of the city.
     :param p: a path inside of the graph
+    :param filename: name of the filename
     :effect: saves an image of the path in filename
     """
 

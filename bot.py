@@ -5,7 +5,6 @@ from telegram.ext.filters import Filters
 from typing import Dict
 import os
 from typing_extensions import TypeAlias
-from typing import Union, List, Tuple
 from metro import Position
 
 

@@ -51,7 +51,7 @@ Accesses: TypeAlias = List[Access]
 
 def distance(pos1: Position, pos2: Position) -> float:
     """
-    :param node1, node2: any class with attribute pos (latitude and longitude)
+    :param pos1, pos2: two coordinates
     :returns: the euclidean distance between node1 node2
     """
 
