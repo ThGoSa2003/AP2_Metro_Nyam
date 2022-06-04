@@ -1,23 +1,25 @@
-import os
-import sys
 import restaurants
 import city
-from nodes import *
 from telegram.ext import Updater, CommandHandler, MessageHandler
 from telegram.ext.filters import Filters
-from typing_extensions import TypeAlias
-from typing import Dict, List
+from typing import Dict
 import os
+from typing_extensions import TypeAlias
+from typing import Union, List, Tuple
 
 
 class Bot:
+    """This class represents the Bot."""
     st_graph: TypeAlias = city.OsmnxGraph
     city_graph: TypeAlias = city.CityGraph
     all_restaurants: TypeAlias = restaurants.Restaurants
     res_list: TypeAlias = Dict[int, restaurants.Restaurants]
-    coord: TypeAlias = Dict[int, List[int]]  # (latitude, longitude)
+    # user_id: Restaurants
+    coord: TypeAlias = Dict[int, List[int]]
+    # user_id: (longitude, latitude)
 
     def __init__(self) -> None:
+        """Initilization of the bot instance."""
         self.st_graph = city.load_osmnx_graph("graph.gpickle")
         self.city_graph = city.load_city_graph("graph.gpickle",
                                                "city_graph.gpickle")
@@ -26,36 +28,38 @@ class Bot:
         self.coord = {}
 
     def start(self, update, context) -> None:
-        """Escriu el missatge inicial del bot."""
+        """It writes the first message of the conversation."""
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=open("start.txt").read())
+        print("Usuari", update.message.from_user.id, "ha fet /start")
 
     def help(self, update, context) -> None:
         """
-        Escriu l'especificació de totes les comandes que l'usuari pot
-        utilitzar amb el bot.
+        It writes the specification of all the commands that are
+        available for the user.
         """
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=open("help.txt").read())
+        print("Usuari", update.message.from_user.id, "ha fet /help")
 
     def update_location(self, update, context) -> None:
-        """Guarda la localització de l'usuari quan aquest la comparteix."""
-        id = update.message.from_user.id  # id usuari
+        """It saves the user's location when he/she sends it."""
+        id = update.message.from_user.id  # user id
         self.coord[id] = [0, 0]
         self.coord[id][0] = update.message['location']['longitude']
         self.coord[id][1] = update.message['location']['latitude']
+        print("Usuari", id, "ha actualitzat la seva ubicació")
 
     def get_location(self, update, context) -> None:
         """
-        Escriu les coordenades de la ubicació des de la qual es traçaran
-        les rutes.
+        It writes the coordinates from which the routes will be calculated.
         """
-        id = update.message.from_user.id  # id usuari
+        id = update.message.from_user.id  # user id
         if id not in self.coord.keys():
-            txt = "No tenim la teva ubicació. Envia-la. Si ja l'has enviat pot"
-            txt += " tardar una estona en carregar."
+            txt = "No tenim la teva ubicació. Envia-la. Si ja l'has enviat"
+            txt += " pot tardar una estona en carregar."
             context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text=txt)
@@ -66,27 +70,27 @@ class Bot:
             context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text=txt)
+        print("Usuari", id, "ha fet /get_location")
 
     def author(self, update, context):
-        """
-        Escriu qui ha fet el programa.
-        """
+        """ It writes the authors of the program."""
         txt = "Aquest programa està fet per Oriol López i Thomas González."
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=txt)
+        print("Usuari", update.message.from_user.id, "ha fet /author")
 
     def find(self, update, context):
         """
-        Donada una paraula per filtrar, escriu tots els restaurants de Barcelona
-        amb la paraula a algun camp seu (nom, descripció, ubicació etc.)
+        Given a logical query entry in the user context, write some
+        restaurants (up to 12) which gat through the filter.
         """
         if len(context.args) == 0:
             return
         query = ''
         for a in context.args:
             query += a
-        id = update.message.from_user.id  # id usuari
+        id = update.message.from_user.id  # user id
         self.res_list[id] = restaurants.find(query,
                                              self.all_restaurants)
 
@@ -104,41 +108,51 @@ class Bot:
             context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text=txt)
+        print("Usuari", id, "ha fet /find")
 
     def info(self, update, context):
         """
-        Donat el número del restaurant a la llista de la última cerca,
-        escriu tota la seva informació.
+        Given the number of the restaurant in the last list obtained with the
+        find command, write all its information.
         """
-        id = update.message.from_user.id  # id usuari
+        id = update.message.from_user.id  # user id
         if id not in self.res_list.keys():
-            txt = "Has de buscar restaurants amb la comanda /find <query> abans"
-            txt += " de buscar la informació d'algun restaurant."
+            txt = "Has de buscar restaurants amb la comanda /find <query>"
+            txt += " abans de buscar la informació d'algun restaurant."
             context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text=txt)
         else:
-            numero = int(context.args[0])
-            if numero < 0 or numero >= len(self.res_list[id]):
+            num = int(context.args[0])
+            if num < 0 or num >= len(self.res_list[id]):
                 txt = "El número de restaurant que has introduït no és a la "
                 txt += "llista de cerca més recent."
                 context.bot.send_message(
                     chat_id=update.effective_chat.id,
                     text=txt)
             else:
-                txt = ""
-                for attribute, value in vars(self.res_list[id][numero]).items():
-                    txt += str(attribute) + ": " + str(value) + "\n"
+                res = self.res_list[id][num]
+                txt = "Nom: " + str(res.name) + "\n"
+                txt += "Adreça: " + str(res.adresses_road_name)
+                if res.adresses_start_street_number is not None:
+                    txt += " " + str(int(res.adresses_start_street_number))
+                txt += "\n" + "Districte: "
+                txt += str(res.adresses_neighbourhood_name) + ", "
+                txt += str(res.adresses_district_name) + "\n"
+                txt += str(res.values_attribute_name) + str(res.values_value)
+
                 context.bot.send_message(
                     chat_id=update.effective_chat.id,
                     text=txt)
+        print("Usuari", id, "ha fet /info")
 
     def guide(self, update, context):
         """
-        Donat el número del restaurant a la llista de la última cerca,
-        mostra a pantalla un mapa de com arribar-hi.
+        Given the number of the restaurant in the last list obtained with the
+        find command, show in the map how to arrive to it from the user's
+        location..
         """
-        id = update.message.from_user.id  # id usuari
+        id = update.message.from_user.id  # user id
         if id not in self.res_list.keys():
             txt = "Has de buscar restaurants amb la comanda /find <query> "
             txt += "abans de buscar la informació d'algun restaurant."
@@ -146,7 +160,8 @@ class Bot:
                 chat_id=update.effective_chat.id,
                 text=txt)
         elif id not in self.coord.keys():
-            txt = "Has de compartir la teva ubicació si vols que pugui guiarte"
+            txt = "Has de compartir la teva ubicació "
+            txt += "si vols que pugui guiar-te."
             context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text=txt)
@@ -163,20 +178,20 @@ class Bot:
                 res_long = restaurant.geo_epgs_4326_y
                 res_lat = restaurant.geo_epgs_4326_x
                 restaurant_pos = (res_long, res_lat)
-                city.plot_path(self.city_graph, city.find_path(self.st_graph,
-                                                               self.city_graph, self.coord[id], restaurant_pos),
+                city.plot_path(self.city_graph,
+                               city.find_path(self.st_graph,
+                                              self.city_graph, self.coord[id],
+                                              restaurant_pos),
                                "path" + str(id) + ".png")
                 context.bot.send_photo(
                     chat_id=update.effective_chat.id,
                     photo=open("path" + str(id) + ".png", 'rb'))
                 os.remove("path" + str(id) + ".png")
+        print("Usuari", id, "ha fet /guide")
 
 
 def main():
-    """
-    Crea un bot de telegram que permet trobar i arribar a restaurants
-    de Barcelona.
-    """
+    """Deploy the bot in telegram."""
     token = ""
     try:
         token = open('token.txt').read().strip()
@@ -198,6 +213,7 @@ def main():
     dispatcher.add_handler(CommandHandler('find', bot.find))
     dispatcher.add_handler(CommandHandler('info', bot.info))
     dispatcher.add_handler(CommandHandler('guide', bot.guide))
+    print("Bot iniciat")
     updater.start_polling()
     updater.idle()
 

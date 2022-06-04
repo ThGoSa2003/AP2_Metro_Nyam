@@ -1,17 +1,35 @@
 from matplotlib import pyplot as plt
 import networkx
 import osmnx as ox
-import haversine
-import pandas as pd
 import staticmap
 import constants as ct
 from metro import Position, get_metro_graph, MetroGraph
+from metro import Access, Station, distance
+from dataclasses import dataclass
+from typing_extensions import TypeAlias
+from typing import Union, List, Tuple
 import os
-from typing import Dict
-from nodes import *
+
 
 CityGraph: TypeAlias = networkx.Graph
 OsmnxGraph: TypeAlias = networkx.MultiDiGraph
+
+
+@dataclass
+class St_node:
+    """
+    This represents a street node.
+    """
+
+    id: int
+    pos: Position
+
+    def __hash__(self):
+        return hash(self.id)
+
+
+Node: TypeAlias = Union[Access, Station, St_node]
+Path: TypeAlias = List[Node]
 
 
 def get_osmnx_graph() -> OsmnxGraph:
@@ -62,8 +80,7 @@ def load_city_graph(filename_osmnx: str, filename_city: str) -> CityGraph:
 
     if not os.path.exists(filename_city):
         save_city_graph(build_city_graph(load_osmnx_graph(filename_osmnx),
-                                         get_metro_graph()),
-                        filename_city)
+                                         get_metro_graph()), filename_city)
     return networkx.read_gpickle(filename_city)
 
 
@@ -84,7 +101,7 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
     city_graph.add_nodes_from(st_nodes)
 
     for edge_n_attribute in g1.edges.data():
-        if(edge_n_attribute[0] != edge_n_attribute[1]):
+        if edge_n_attribute[0] != edge_n_attribute[1]:
             node1 = st_nodes_dict[edge_n_attribute[0]]
             node2 = st_nodes_dict[edge_n_attribute[1]]
             if 'name' in edge_n_attribute[2]:
@@ -105,18 +122,19 @@ def build_city_graph(g1: OsmnxGraph, g2: MetroGraph) -> CityGraph:
             closest_st_node = ox.distance.nearest_nodes(g1, node[0].pos[0],
                                                         node[0].pos[1])
             city_graph.add_edge(node[0], st_nodes_dict[closest_st_node],
-                                type="walk", distance=distance(node[0],
-                                st_nodes_dict[closest_st_node]))
+                                type="walk", distance=distance(node[0].pos,
+                                st_nodes_dict[closest_st_node].pos))
 
     return city_graph
 
 
-def find_path(ox_g: OsmnxGraph, g: CityGraph, src: Position, dst: Position) -> Path:
+def find_path(ox_g: OsmnxGraph, g: CityGraph,
+              src: Position, dst: Position) -> Path:
     """
     :param ox_g: a graph of the streets of the city.
     :param g: a graph of the city
-    :src: the starting node.
-    :dst: the enging node.
+    :param src: the starting node.
+    :param dst: the enging node.
     :returns: the shortest path from src to dst.
     """
 
@@ -157,24 +175,23 @@ def plot(g: CityGraph, filename: str) -> None:
     the colours will be different.
     """
 
-    map = staticmap.StaticMap(ct.resolution_x, ct.resolution_y)
+    city_map = staticmap.StaticMap(ct.resolution_x, ct.resolution_y)
     for node in g.nodes:
         if type(node) == Station:
-            map.add_marker(staticmap.CircleMarker(node.pos,
-                                                  ct.colour[node.line],
-                                                  1))
+            city_map.add_marker(staticmap.CircleMarker(node.pos,
+                                                       ct.colour[node.line],
+                                                       1))
         else:
-            map.add_marker(staticmap.CircleMarker(node.pos,
-                                                  ct.colour["other"],
-                                                  1))
+            city_map.add_marker(staticmap.CircleMarker(node.pos,
+                                                       ct.colour["other"], 1))
     for edge in g.edges.data():
         if edge[2]['type'] == 'tram':
-            map.add_line(staticmap.Line([edge[0].pos, edge[1].pos],
-                                        ct.colour[edge[0].line], 0))
+            city_map.add_line(staticmap.Line([edge[0].pos, edge[1].pos],
+                                             ct.colour[edge[0].line], 0))
         else:
-            map.add_line(staticmap.Line([edge[0].pos, edge[1].pos],
-                                        ct.colour["other"], 0))
-    image = map.render()
+            city_map.add_line(staticmap.Line([edge[0].pos, edge[1].pos],
+                                             ct.colour["other"], 0))
+    image = city_map.render()
     image.save(filename)
 
 
@@ -187,7 +204,8 @@ def plot_path(g: CityGraph, p: Path, filename: str) -> None:
 
     map = staticmap.StaticMap(ct.resolution_x, ct.resolution_y)
     for i in range(len(p) - 1):
-        if type(p[i]) == Station and type(p[i+1]) == Station and p[i].line == p[i+1].line:
+        if type(p[i]) == Station and type(p[i+1]) == Station and \
+                p[i].line == p[i+1].line:
             map.add_line(staticmap.Line((p[i].pos, p[i + 1].pos),
                                         ct.colour[p[i].line], 3))
         else:
@@ -196,9 +214,11 @@ def plot_path(g: CityGraph, p: Path, filename: str) -> None:
     for node in p:
         if type(node) == Station:
             map.add_marker(staticmap.CircleMarker(node.pos,
-                                                  ct.colour[node.line], 10))
+                                                  ct.colour[node.line],
+                                                  10))
         else:
             map.add_marker(staticmap.CircleMarker(node.pos,
-                                                  ct.colour["other"], 10))
+                                                  ct.colour["other"],
+                                                  10))
     image = map.render()
     image.save(filename)

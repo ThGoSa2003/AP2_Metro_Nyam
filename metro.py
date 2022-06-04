@@ -3,10 +3,67 @@ import sys
 import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
-from nodes import *
+from dataclasses import dataclass
+from typing_extensions import TypeAlias
+from typing import List, Tuple
 from constants import resolution_x, resolution_y
 
+Position: TypeAlias = Tuple[float, float]
+
 MetroGraph: TypeAlias = nx.Graph
+
+
+@dataclass
+class Station:
+    """
+    This class represents a station within the metro of a city
+    """
+
+    id: int
+    name: str
+    order: int
+    line: str
+    pos: Position
+
+    def __hash__(self) -> int:
+        return hash(self.id)
+
+
+@dataclass
+class Access:
+    """
+    This class represents an access point to the metro of a city
+    """
+
+    id: int
+    name: str
+    accessibility: bool
+    name_station: str
+    pos: Position
+
+    def __hash__(self) -> int:
+        return hash(self.id)
+
+
+Stations: TypeAlias = List[Station]
+Accesses: TypeAlias = List[Access]
+
+
+def distance(pos1: Position, pos2: Position) -> float:
+    """
+    :param node1, node2: any class with attribute pos (latitude and longitude)
+    :returns: the euclidean distance between node1 node2
+    """
+
+    try:
+        d = (pos1[0] - pos2[0])**2 + \
+            (pos1[1] - pos2[1])**2
+        return d**(1/2)
+    except AttributeError:
+        txt = "You tried to get the distance between something "
+        txt += "that isn't a position."
+        raise AttributeError(txt)
+        sys.exit()
 
 
 def get_metro_graph() -> MetroGraph:
@@ -24,28 +81,31 @@ def get_metro_graph() -> MetroGraph:
 
     for i in range(len(stations) - 1):
         if stations[i].order < stations[i + 1].order:
+            d = distance(stations[i].pos, stations[i+1].pos)
             metro_graph.add_edge(stations[i], stations[i + 1], type="tram",
-                                 distance=distance(stations[i], stations[i+1]))
+                                 distance=d)
             metro_graph.add_edge(stations[i + 1], stations[i], type="tram",
-                                 distance=distance(stations[i], stations[i+1]))
+                                 distance=d)
 
     stations.sort(key=lambda s: (s.name, s.line))
 
     for i in range(len(stations) - 1):
         if stations[i].name == stations[i + 1].name:
+            d = distance(stations[i].pos, stations[i+1].pos)
             metro_graph.add_edge(stations[i], stations[i + 1], type="enllaç",
-                                 distance=distance(stations[i], stations[i+1]))
+                                 distance=d)
             metro_graph.add_edge(stations[i + 1], stations[i], type="enllaç",
-                                 distance=distance(stations[i], stations[i+1]))
+                                 distance=d)
 
     stations_dict = {}
     for s in stations:
         stations_dict[s.name] = s
     for a in accesses:
+        d = distance(a.pos, stations_dict[a.name_station].pos)
         metro_graph.add_edge(a, stations_dict[a.name_station], type="acces",
-                             distance=distance(a, stations_dict[a.name_station]))
+                             distance=d)
         metro_graph.add_edge(stations_dict[a.name_station], a, type="acces",
-                             distance=distance(a, stations_dict[a.name_station]))
+                             distance=d)
 
     return metro_graph
 
@@ -56,7 +116,7 @@ def read_stations() -> Stations:
     """
 
     try:
-        csv_stations = pd.read_csv('./data/estacions.csv')
+        csv_stations = pd.read_csv('./estacions.csv')
         dim = csv_stations.shape
         stations = []
         for i in range(dim[0]):
@@ -77,7 +137,7 @@ def read_accesses() -> Accesses:
     """
 
     try:
-        csv_accesses = pd.read_csv('./data/accessos.csv')
+        csv_accesses = pd.read_csv('./accessos.csv')
         dim = csv_accesses.shape
         accesses = []
         for i in range(dim[0]):
@@ -113,10 +173,11 @@ def plot(g: MetroGraph, filename: str) -> None:
     :effect: an image of g will be saved in filename
     """
 
-    map = staticmap.StaticMap(resolution_x, resolution_y)
+    metro_map = staticmap.StaticMap(resolution_x, resolution_y)
     for node in g.nodes:
-        map.add_marker(staticmap.CircleMarker(node.pos, "red", 10))
+        metro_map.add_marker(staticmap.CircleMarker(node.pos, "red", 10))
     for edge in g.edges:
-        map.add_line(staticmap.Line([edge[0].pos, edge[1].pos], "blue", 5))
-    image = map.render()
+        metro_map.add_line(staticmap.Line([edge[0].pos, edge[1].pos],
+                                          "blue", 5))
+    image = metro_map.render()
     image.save(filename)

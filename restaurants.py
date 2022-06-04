@@ -1,4 +1,3 @@
-import fuzzysearch
 import sys
 import pandas as pd
 from dataclasses import *
@@ -77,14 +76,14 @@ def read() -> Restaurants:
     """
 
     try:
-        csv_res = pd.read_csv('./data/restaurants.csv')
+        csv_res = pd.read_csv('./restaurants.csv')
         dim = csv_res.shape
         restaurants = []
         for i in range(dim[0]):
             restaurants.append(Restaurant(*[j for j in csv_res.iloc[i, :]]))
         return restaurants
     except Exception:
-        sys.exit("I cannot find the data/restaurants.csv, please add it in it")
+        sys.exit("I can't find the data/restaurants.csv, please add it in it")
 
 
 def find(query: str, restaurants: Restaurants) -> Restaurants:
@@ -94,35 +93,35 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
     :returns: a list of the restaurants that contain query in any field
     """
 
-    def parsing(l: List[str], order: str) -> List[str]:
+    def parsing(line: List[str], order: str) -> List[str]:
         parsed_entry = []
-        for i_l in l:
+        for i_l in line:
             inner_text = i_l.split(order)
             for s in inner_text:
                 parsed_entry.append(s)
         return parsed_entry
 
-    def search(l: List[str], i: int) -> set[Restaurant]:
-        stack = list()  # will be used as a stack
+    def search(line: List[str], i: int) -> Restaurants:
+        stack = []  # will be used as a stack
         total = set(restaurants)
         i = -1
-        while i >= -len(l):
-            if(l[i] == 'or'):
+        while i >= -len(line):
+            if(line[i] == 'or'):
                 first = stack.pop()
                 second = stack.pop()
                 stack.append(first.union(second))
-            elif(l[i] == 'and'):
+            elif(line[i] == 'and'):
                 first = stack.pop()
                 second = stack.pop()
                 stack.append(first.intersection(second))
-            elif(l[i] == 'not'):
+            elif(line[i] == 'not'):
                 first = stack.pop()
                 stack.append(
                     total.difference(first))
             else:
-                stack.append({r for r in restaurants if r.contains(l[i])})
+                stack.append({r for r in restaurants if r.contains(line[i])})
             i = i - 1
-        return stack.pop()
+        return list(stack.pop())
 
     parsed_entry = parsing(query.split('('), ')')
     parsed_entry = parsing(parsed_entry.copy(), ',')
@@ -130,3 +129,4 @@ def find(query: str, restaurants: Restaurants) -> Restaurants:
         parsed_entry.remove('')
     if len(parsed_entry) != 0:
         return list(search(parsed_entry, 0))
+    return []
