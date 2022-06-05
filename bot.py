@@ -92,17 +92,15 @@ class Bot:
             query += a
         id = update.message.from_user.id  # user id
         self.res_list[id] = restaurants.find(query,
-                                             self.all_restaurants)
+                                             self.all_restaurants)[:12]
 
-        if len(self.res_list[id]) == 0:
+        length = len(self.res_list[id])
+        if length == 0:
             context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text="No hem trobat cap restaurant amb aquest filtre.")
         else:
             txt = ""
-            length = len(self.res_list[id])
-            if length > 12:
-                length = 12
             for i in range(length):
                 txt += str(i) + " " + str(self.res_list[id][i].name) + "\n"
             context.bot.send_message(

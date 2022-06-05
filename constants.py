@@ -1,6 +1,6 @@
 velocity = {
     "walk": 1,
-    "tram": 2.5,
+    "tram": 4,
     "enllaç": 1,
     "acces": 1
 }
